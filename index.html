@@ -118,6 +118,26 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
 .hide{display:none!important}
+.kw{display:block;font-family:"Noto Sans KR",sans-serif;font-weight:600;font-size:12px;color:var(--mute);letter-spacing:0;margin-top:2px}
+td .kw{display:block;font-size:11px;margin:0}
+.search{border:2px solid var(--ink);margin:14px 0 4px}
+.search>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:800;font-size:17px;display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--bg)}
+.search>summary::-webkit-details-marker{display:none}
+.search>summary::after{content:"＋";font-weight:800}.search[open]>summary::after{content:"－"}
+.search form{padding:14px 16px;display:grid;gap:12px}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.sgrid label{display:grid;gap:4px;font-size:13px;color:var(--mute);font-weight:600}
+.sgrid select,.sgrid input{font:inherit;font-size:16px;height:46px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);padding:0 10px;border-radius:0;width:100%}
+.swap{all:unset;cursor:pointer;font-size:13px;font-weight:800;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.quick button{all:unset;cursor:pointer;font-size:13px;border:1px solid var(--line);padding:6px 10px;background:var(--soft)}
+.serr{color:var(--red);font-size:14px;font-weight:600}
+#sres{padding:0 16px 16px;display:grid;gap:12px}
+.sum{font-size:15px;line-height:1.5}.sum b{font-size:18px}
+.ref{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ref .part b{font-size:15px}
+.btn.big{height:52px;font-size:15px;flex:1 1 150px;justify-content:center}
+@media(max-width:600px){.sgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ref{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){
  .row summary,.tr{grid-template-columns:104px minmax(0,1fr) 14px;gap:12px}
  .tr{grid-template-columns:104px minmax(0,1fr)}
@@ -150,7 +170,7 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 
  <section id="p-home">
   <h2>어느 도시가 가장 저렴할까?</h2>
-  <p class="hint">고른 용량의 병원 최저가에 한국에서 가는 편도 최저가를 더한 예상 금액이에요. 도시를 누르면 그 도시 병원만 볼 수 있어요.</p>
+  <p class="hint">고른 용량의 병원 최저가(원화 환산)에 가는 편·오는 편 교통 최저가를 더한 예상 금액이에요. 도시를 누르면 그 도시 병원만 볼 수 있어요.</p>
   <div id="cities"></div>
  </section>
 
@@ -172,8 +192,27 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
  </section>
 
  <section id="p-travel" class="hide">
+  <details class="search" id="search" open>
+   <summary>📅 날짜 정해서 항공권 찾기</summary>
+   <form id="sf" novalidate>
+    <div class="sgrid">
+     <label>출발 (한국)<select id="s-from"></select></label>
+     <label>도착 (일본)<select id="s-to"></select></label>
+     <label>가는 날<input type="date" id="s-dep" required></label>
+     <label>오는 날 · 비우면 편도<input type="date" id="s-ret"></label>
+     <label>인원 (성인)<select id="s-pax"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+     <label>&nbsp;<button type="button" class="btn o" id="s-clear" style="height:46px;justify-content:center">오는 날 지우기(편도)</button></label>
+    </div>
+    <div class="quick" id="quick"><span class="lab" style="align-self:center">머무는 기간</span><button type="button" data-n="1">1박 2일</button><button type="button" data-n="2">2박 3일</button><button type="button" data-n="3">3박 4일</button><button type="button" data-n="4">4박 5일</button></div>
+    <p class="serr" id="serr" hidden></p>
+    <button class="btn big" type="submit">이 날짜로 찾기</button>
+   </form>
+   <div id="sres"></div>
+  </details>
+  <h2>매일 조회하는 최저가</h2>
   <div class="ctl">
-   <div class="line" id="fromChips"><span class="lab">출발</span></div>
+   <div class="line" id="dirChips"><span class="lab">방향</span></div>
+   <div class="line" id="fromChips"><span class="lab">한국</span></div>
    <div class="line" id="modeChips"><span class="lab">수단</span></div>
   </div>
   <p class="count" id="tcount"></p>
@@ -187,7 +226,7 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 
  <div class="note">
   <p>정보 제공용 페이지예요. 마운자로는 전문의약품이라 처방 여부와 용량은 진찰한 의사가 정하고, 주사 방법·부작용 상담도 의사와 하세요. 가격·예약 상황·운임은 수시로 바뀌니 예약 전 병원과 항공사·선사에서 직접 확인하세요.</p>
-  <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편은 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이에요.</p>
+  <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편 "매일 조회하는 최저가"는 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이고, 가는 편과 오는 편을 따로 조회해요. 날짜를 정해 찾으면 네이버 항공권·스카이스캐너·구글 항공편이 그 날짜로 열려 실시간 요금을 확인할 수 있어요.</p>
   <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요.</p>
  </div>
 </main>
@@ -195,7 +234,7 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 <script>
 {
 const DOSES=['2.5','5','7.5','10','12.5','15'];
-const st={dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체'};
+const st={dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체',dir:'go',sFrom:'PUS',sTo:'FUK',sDep:'',sRet:'',sPax:'1'};
 try{Object.assign(st,JSON.parse(localStorage.getItem('jt-ui')||'{}'),{q:''})}catch(e){}
 const save=()=>{try{const {q,...r}=st;localStorage.setItem('jt-ui',JSON.stringify(r))}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -204,6 +243,7 @@ const fmt=n=>Number(n).toLocaleString('ko-KR');
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:null;
 const man=w=>w>=10000?(Math.round(w/1000)/10).toLocaleString('ko-KR')+'만':fmt(Math.round(w/100)*100);
 let C=null,T=null,FX=null;
+const kw=y=>{const w=yen2won(y);return w?`≈ ${man(w)}원`:''};
 
 /* ---------- 데이터 정리 ---------- */
 const val=v=>v&&typeof v==='object'?(v.value??v.number??v.date??v.label??null):v;
@@ -234,6 +274,9 @@ const fromGroup=f=>/부산/.test(f)?'부산':/인천|김포|서울/.test(f)?'인
 // 병원 도시 ↔ 도착지 매칭
 const cityOfDest=to=>/후쿠오카|하카타/.test(to)?'후쿠오카':/오사카|간사이/.test(to)?'오사카':/도쿄|나리타|하네다/.test(to)?'도쿄':/시모노세키/.test(to)?'시모노세키':/대마도|쓰시마|히타카쓰|이즈하라/.test(to)?'대마도':/나고야|주부/.test(to)?'나고야':/삿포로|신치토세/.test(to)?'삿포로':to;
 const nearCity={'시모노세키':'후쿠오카'};
+const KR=/부산|인천|김포|서울/;
+const dirOf=r=>KR.test(r.from)?'go':KR.test(r.to)?'back':'go';
+const krSide=b=>b.dir==='go'?b.from:b.to, jpSide=b=>b.dir==='go'?b.to:b.from;
 
 /* 노선·수단별 최신값 + 기록 */
 function travelBoard(){
@@ -246,11 +289,12 @@ function travelBoard(){
     const last=list[list.length-1];
     const lastP=withP[withP.length-1]||null;
     const prev=withP.length>1?withP[withP.length-2]:null;
-    return {key:last.route+'|'+last.mode,route:last.route,from:last.from,to:last.to,city:cityOfDest(last.to),mode:last.mode,cur:lastP,latest:last,prev,hist:withP.slice(-14)};
+    const dir=dirOf(last);
+    return {key:last.route+'|'+last.mode,route:last.route,from:last.from,to:last.to,dir,city:cityOfDest(dir==='go'?last.to:last.from),mode:last.mode,cur:lastP,latest:last,prev,hist:withP.slice(-14)};
   });
 }
-function cheapestTo(city){
-  const b=travelBoard().filter(x=>x.cur&&(x.city===city||nearCity[x.city]===city));
+function cheapestTo(city,dir='go'){
+  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city));
   b.sort((a,c)=>a.cur.price-c.cur.price);return b[0]||null;
 }
 const yen2won=y=>FX?y*FX/100:null;
@@ -273,10 +317,11 @@ function renderHome(){
   let cards=Object.entries(byCity).map(([city,list])=>{
     list.sort((a,b)=>a.p[k]-b.p[k]);const best=list[0];
     const online=/온라인|전국/.test(city);
-    const tr=online?null:cheapestTo(city);
+    const tr=online?null:cheapestTo(city,'go');
+    const bk=online?null:cheapestTo(city,'back');
     const won=yen2won(best.p[k]);
-    const total=won!=null&&tr?won+tr.cur.price:null;
-    return {city,list,best,tr,won,total,online};
+    const total=won!=null&&tr?won+tr.cur.price+(bk?bk.cur.price:0):null;
+    return {city,list,best,tr,bk,won,total,online};
   });
   const grp=x=>x.online?2:x.total!=null?0:1;
   cards.sort((a,b)=>(grp(a)-grp(b))||((a.total??a.won??a.best.p[k])-(b.total??b.won??b.best.p[k])));
@@ -285,10 +330,10 @@ function renderHome(){
    ${i>0&&grp(x)!==grp(cards[i-1])?`<p class="hint" style="margin-top:18px">${grp(x)===1?'아래 도시는 아직 교통편 운임이 없어 병원 가격만 비교했어요.':'온라인 진료 후 호텔·숙소로 받는 곳'}</p>`:''}
    <a class="city ${i===firstTotal||(firstTotal<0&&i===0)?'best1':''}" href="#clinics" data-city="${esc(x.city)}">
     <div><div class="cn">${esc(x.city)}</div><div class="meta">${x.list.length}곳에서 ${keyLabel()} 처방가 확인</div></div>
-    <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>병원+편도 교통</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
+    <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>${x.bk?'병원+왕복 교통':'병원+가는 편 (오는 편 수집 중)'}</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
     <div class="parts">
-     <div class="part"><span class="m">병원 최저</span><b>${esc(x.best.name)}</b><span class="num">¥${fmt(x.best.p[k])}</span>${x.won?` <span class="m">≈₩${man(x.won)}</span>`:''}</div>
-     <div class="part"><span class="m">${x.online?'받는 방법':'가는 길 최저(편도)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>${esc(x.tr.route)} · ${esc(x.tr.mode)}</b><span class="num">₩${fmt(x.tr.cur.price)}</span> <span class="m">${x.tr.cur.dep?esc(x.tr.cur.dep)+' 출발':''}</span>`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
+     <div class="part"><span class="m">병원 최저</span><b>${esc(x.best.name)}</b><span class="num">¥${fmt(x.best.p[k])}</span>${x.won?`<span class="kw">${kw(x.best.p[k])}</span>`:''}</div>
+     <div class="part"><span class="m">${x.online?'받는 방법':'교통 최저 (가는 편 / 오는 편)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>가는 편 ${esc(x.tr.mode)} <span class="num">₩${fmt(x.tr.cur.price)}</span></b><span class="m">${esc(x.tr.route)}${x.tr.cur.dep?' · '+esc(x.tr.cur.dep):''}</span>${x.bk?`<b style="margin-top:6px">오는 편 ${esc(x.bk.mode)} <span class="num">₩${fmt(x.bk.cur.price)}</span></b><span class="m">${esc(x.bk.route)}${x.bk.cur.dep?' · '+esc(x.bk.cur.dep):''}</span>`:'<span class="m" style="display:block;margin-top:6px">오는 편 운임은 수집 중</span>'}`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
     </div>
    </a>`).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 아직 없어요. 다른 용량을 골라 보세요.</div>`;
   $('cities').onclick=e=>{const a=e.target.closest('.city');if(!a)return;st.city=a.dataset.city;save();buildCityChips()};
@@ -306,7 +351,8 @@ function tagFor(c){
 function priceTable(c){
   return `<table><thead><tr><th>용량</th><th>1개월(4펜)</th><th>3개월(12펜)</th></tr></thead><tbody>${DOSES.map(x=>{
     const a=c.p['1_'+x],b=c.p['3_'+x],hl=m=>st.dose===x&&st.period===m?' class="hl"':'';
-    return `<tr><td>${x}mg</td><td${hl('1')}>${a?'¥'+fmt(a):'–'}</td><td${hl('3')}>${b?'¥'+fmt(b):'–'}</td></tr>`}).join('')}</tbody></table>`;
+    const cell=v=>v?`¥${fmt(v)}${FX?`<span class="kw">${man(yen2won(v))}원</span>`:''}`:'–';
+    return `<tr><td>${x}mg</td><td${hl('1')}>${cell(a)}</td><td${hl('3')}>${cell(b)}</td></tr>`}).join('')}</tbody></table>`;
 }
 function buildCityChips(){
   if(!C)return;
@@ -325,16 +371,17 @@ function renderClinics(){
   const open=new Set([...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.n));
   $('list').innerHTML=L.length?L.map((c,i)=>{
     const v=c.p[k],w=v?yen2won(v):null,url=safeUrl(c.url);
-    const tr=/온라인|전국/.test(c.city)?null:cheapestTo(c.city);
-    const sub=[w?`≈₩${man(w)}`:'',v&&st.period==='3'?`월 ¥${fmt(Math.round(v/3))}`:'',c.memo&&/\+α|미확인/.test(c.memo)?'+α 별도':''].filter(Boolean).join(' · ');
+    const tr=/온라인|전국/.test(c.city)?null:cheapestTo(c.city,'go');
+    const bk=/온라인|전국/.test(c.city)?null:cheapestTo(c.city,'back');
+    const sub=[v&&st.period==='3'?`월 ¥${fmt(Math.round(v/3))}`:'',c.memo&&/\+α|미확인/.test(c.memo)?'+α 별도':''].filter(Boolean).join(' · ');
     return `<details class="row" data-n="${esc(c.name)}" ${open.has(String(c.name))?'open':''}><summary>
-     <div>${v?`<div class="price num ${st.sort==='price'&&i<3?'rank':''}"><small>¥</small>${fmt(v)}</div><div class="per">${sub||'총액'}</div>`:`<div class="price na">${st.dose}mg 가격 미확인</div>`}</div>
+     <div>${v?`<div class="price num ${st.sort==='price'&&i<3?'rank':''}"><small>¥</small>${fmt(v)}</div>${w?`<span class="kw">${kw(v)}</span>`:''}<div class="per">${sub||'총액'}</div>`:`<div class="price na">${st.dose}mg 가격 미확인</div>`}</div>
      <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)}${c.checked?` · ${esc(c.checked)} 확인`:''}</div><div class="tags">${tagFor(c)}</div>${c.status&&c.status!=='확인 필요'?`<div class="status">${esc(c.status)}</div>`:''}</div>
      <div class="arw" aria-hidden="true">›</div></summary>
      <div class="det">${priceTable(c)}
-      ${tr?`<div class="go">✈ 가는 길 최저: <b>${esc(tr.route)} ${esc(tr.mode)}</b> 편도 <b class="num">₩${fmt(tr.cur.price)}</b> (${tr.cur.dep?esc(tr.cur.dep)+' 출발':''}${tr.cur.dep&&tr.cur.carrier?', ':''}${tr.cur.carrier?esc(tr.cur.carrier):''}) <a href="#travel">전체 보기</a></div>`:''}
+      ${tr||bk?`<div class="go">✈ ${tr?`가는 편 최저 <b>${esc(tr.route)} ${esc(tr.mode)} <span class="num">₩${fmt(tr.cur.price)}</span></b>${tr.cur.dep?' ('+esc(tr.cur.dep)+')':''}`:''}${bk?`<br>✈ 오는 편 최저 <b>${esc(bk.route)} ${esc(bk.mode)} <span class="num">₩${fmt(bk.cur.price)}</span></b>${bk.cur.dep?' ('+esc(bk.cur.dep)+')':''}`:''}</div>`:''}
       <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
-      <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
+      <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}${AP_OF_CITY[c.city]?`<button class="btn o" data-search="${esc(c.city)}">✈ 날짜로 항공권 찾기</button>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
      </div></details>`;
   }).join(''):'<p class="empty">조건에 맞는 병원이 없어요. 필터를 줄여 보세요.</p>';
 }
@@ -348,13 +395,16 @@ function spark(h){
 }
 function renderTravel(){
   const B=travelBoard();
-  const froms=['전체',...new Set(B.map(b=>fromGroup(b.from)))];
+  chips('dirChips',[['go','가는 편 한국→일본'],['back','오는 편 일본→한국']],'dir','',renderTravel);
+  const D=B.filter(b=>b.dir===st.dir);
+  const froms=['전체',...new Set(D.map(b=>fromGroup(krSide(b))))];
   if(!froms.includes(st.from))st.from='전체';
   chips('fromChips',froms.map(f=>[f,f]),'from','',renderTravel);
   chips('modeChips',[['전체','전체'],['항공','항공'],['배','배']],'mode','',renderTravel);
-  let L=B.filter(b=>(st.from==='전체'||fromGroup(b.from)===st.from)&&(st.mode==='전체'||b.mode===st.mode));
+  let L=D.filter(b=>(st.from==='전체'||fromGroup(krSide(b))===st.from)&&(st.mode==='전체'||b.mode===st.mode));
   L.sort((a,b)=>(a.cur?a.cur.price:1e12)-(b.cur?b.cur.price:1e12));
-  $('tcount').textContent=B.length?`${L.length}개 노선 · 성인 1인 편도 최저가${T.updatedAt?' · '+T.updatedAt+' 조회':''}`:'';
+  $('tcount').textContent=D.length?`${L.length}개 노선 · 성인 1인 편도 최저가${T.updatedAt?' · '+T.updatedAt+' 조회':''}`:'';
+  if(B.length&&!D.length){$('tlist').innerHTML='<div class="empty">오는 편(일본→한국) 운임은 매일 낮 조회에 새로 추가돼 다음 조회부터 쌓여요.<br>지금 바로 보려면 위 "날짜 정해서 항공권 찾기"에서 오는 날을 넣어 찾아 보세요.</div>';return}
   if(!B.length){$('tlist').innerHTML='<div class="empty">항공·배편 운임은 매일 낮 12시 40분쯤 조회해서 올라와요.<br>첫 결과가 나오면 여기에 노선별 최저가가 표시돼요.</div>';return}
   const cnt={};if(C)C.clinics.forEach(c=>cnt[c.city]=(cnt[c.city]||0)+1);
   $('tlist').innerHTML=L.map((b,i)=>{
@@ -367,11 +417,82 @@ function renderTravel(){
       ${b.latest.note?`<div class="status">${esc(b.latest.note)}</div>`:''}
       ${near?`<div class="tags"><a class="tag" href="#clinics" data-city="${esc(cnt[b.city]?b.city:nearCity[b.city]||'')}">${esc(near)} →</a></div>`:''}
       ${spark(b.hist)}
-      ${url?`<div class="btns" style="margin-top:8px"><a class="btn o" href="${esc(url)}" target="_blank" rel="noopener">예약·조회 페이지 ↗</a></div>`:''}
+      <div class="btns" style="margin-top:8px">${url?`<a class="btn o" href="${esc(url)}" target="_blank" rel="noopener">조회 출처 ↗</a>`:''}${b.mode==='항공'&&AP_OF_CITY[b.city]?`<button class="btn o" data-search="${esc(b.city)}" data-from="${esc(fromGroup(krSide(b))==='부산'?'PUS':'ICN')}">날짜로 찾기</button>`:''}</div>
      </div></div>`;
   }).join('')||'<p class="empty">조건에 맞는 노선이 없어요.</p>';
   $('tlist').onclick=e=>{const a=e.target.closest('[data-city]');if(a&&a.dataset.city){st.city=a.dataset.city;save();buildCityChips()}};
 }
+
+/* ---------- 날짜로 찾기 ---------- */
+const KR_AP=[['PUS','부산 김해'],['ICN','인천'],['GMP','김포'],['TAE','대구'],['CJU','제주']];
+const JP_AP=[['FUK','후쿠오카'],['KIX','오사카 간사이'],['NRT','도쿄 나리타'],['HND','도쿄 하네다'],['NGO','나고야 주부'],['CTS','삿포로 신치토세'],['HIJ','히로시마'],['KOJ','가고시마'],['SHIP-SHM','시모노세키 (배만)'],['SHIP-TSU','대마도 (배만)']];
+const AP_OF_CITY={'후쿠오카':'FUK','오사카':'KIX','교토':'KIX','도쿄':'NRT','나고야':'NGO','삿포로':'CTS','히로시마':'HIJ','가고시마':'KOJ','시모노세키':'SHIP-SHM','대마도':'SHIP-TSU'};
+const CITY_OF_AP={FUK:'후쿠오카',KIX:'오사카',NRT:'도쿄',HND:'도쿄',NGO:'나고야',CTS:'삿포로',HIJ:'히로시마',KOJ:'가고시마','SHIP-SHM':'시모노세키','SHIP-TSU':'대마도'};
+const apName=c=>(KR_AP.concat(JP_AP).find(x=>x[0]===c)||[c,c])[1];
+const ymd=d=>d.replace(/-/g,''), yymmdd=d=>ymd(d).slice(2);
+const todayStr=()=>{const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());return t.toISOString().slice(0,10)};
+const addDays=(d,n)=>{const t=new Date(d+'T00:00:00');t.setDate(t.getDate()+n);t.setMinutes(t.getMinutes()-t.getTimezoneOffset());return t.toISOString().slice(0,10)};
+const wd=d=>'일월화수목금토'[new Date(d+'T00:00:00').getDay()];
+const md=d=>`${+d.slice(5,7)}/${+d.slice(8,10)}(${wd(d)})`;
+function flightLinks(f,t,dep,ret,pax){
+  const nav=`https://flight.naver.com/flights/international/${f}-${t}-${ymd(dep)}${ret?`/${t}-${f}-${ymd(ret)}`:''}?adult=${pax}&fareType=Y`;
+  const sky=`https://www.skyscanner.co.kr/transport/flights/${f.toLowerCase()}/${t.toLowerCase()}/${yymmdd(dep)}/${ret?yymmdd(ret)+'/':''}?adultsv2=${pax}&cabinclass=economy`;
+  const q=ret?`Flights from ${f} to ${t} on ${dep} through ${ret}`:`One way flights from ${f} to ${t} on ${dep}`;
+  const goo=`https://www.google.com/travel/flights?hl=ko&curr=KRW&q=${encodeURIComponent(q)}`;
+  return [['네이버 항공권',nav],['스카이스캐너',sky],['구글 항공편',goo]];
+}
+function initSearch(){
+  $('s-from').innerHTML=KR_AP.map(([c,n])=>`<option value="${c}">${n} (${c})</option>`).join('');
+  $('s-to').innerHTML=JP_AP.map(([c,n])=>`<option value="${c}">${n}${c.startsWith('SHIP')?'':' ('+c+')'}</option>`).join('');
+  const t=todayStr();
+  if(!st.sDep||st.sDep<t){st.sDep=addDays(t,14);st.sRet=addDays(t,17)}
+  if(st.sRet&&st.sRet<st.sDep)st.sRet='';
+  $('s-from').value=st.sFrom;$('s-to').value=st.sTo;$('s-dep').value=st.sDep;$('s-ret').value=st.sRet;$('s-pax').value=st.sPax;
+  $('s-dep').min=t;$('s-ret').min=st.sDep||t;
+  const sync=()=>{st.sFrom=$('s-from').value;st.sTo=$('s-to').value;st.sDep=$('s-dep').value;st.sRet=$('s-ret').value;st.sPax=$('s-pax').value;$('s-ret').min=st.sDep||t;save()};
+  ['s-from','s-to','s-dep','s-ret','s-pax'].forEach(id=>$(id).addEventListener('change',()=>{sync();if($('sres').innerHTML)runSearch()}));
+  $('s-clear').onclick=()=>{$('s-ret').value='';sync();if($('sres').innerHTML)runSearch()};
+  $('quick').onclick=e=>{const b=e.target.closest('button[data-n]');if(!b)return;if(!$('s-dep').value)$('s-dep').value=addDays(t,14);$('s-ret').value=addDays($('s-dep').value,+b.dataset.n);sync();runSearch()};
+  $('sf').onsubmit=e=>{e.preventDefault();sync();runSearch()};
+}
+function refLine(city,dir,ship){
+  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(ship?x.mode==='배':x.mode==='항공')).sort((a,c)=>a.cur.price-c.cur.price)[0];
+  return b?`<b><span class="num">₩${fmt(b.cur.price)}</span></b><span class="m">${esc(b.route)}${b.cur.dep?' · '+esc(md(b.cur.dep))+' 출발':''}${b.cur.carrier?' · '+esc(b.cur.carrier):''}</span>`:`<span class="m">${dir==='back'?'오는 편 기록은 다음 조회부터 쌓여요':'아직 기록 없음'}</span>`;
+}
+function runSearch(){
+  const f=st.sFrom,t=st.sTo,dep=st.sDep,ret=st.sRet,pax=st.sPax,today=todayStr();
+  const err=m=>{$('serr').textContent=m;$('serr').hidden=false;$('sres').innerHTML=''};
+  $('serr').hidden=true;
+  if(!dep)return err('가는 날을 골라 주세요.');
+  if(dep<today)return err('가는 날이 이미 지났어요. 오늘 이후 날짜를 골라 주세요.');
+  if(ret&&ret<dep)return err('오는 날이 가는 날보다 빨라요.');
+  const city=CITY_OF_AP[t]||'',shipOnly=t.startsWith('SHIP');
+  const nights=ret?Math.round((new Date(ret)-new Date(dep))/864e5):0;
+  const shipRoutes=travelBoard().filter(b=>b.mode==='배'&&(b.city===city||(city==='후쿠오카'&&b.city==='시모노세키')));
+  const shipLinks=[...new Map(shipRoutes.filter(b=>b.cur&&safeUrl(b.cur.src)).map(b=>[b.route,b])).values()];
+  const cnt=C?C.clinics.filter(c=>c.city===city).length:0;
+  $('sres').innerHTML=`
+   <div class="sum"><b>${esc(apName(f))} ${ret?'⇄':'→'} ${esc(apName(t))}</b><br>${md(dep)} 출발${ret?` · ${md(ret)} 귀국 · ${nights}박 ${nights+1}일`:' · 편도'} · 성인 ${pax}명</div>
+   ${shipOnly?'':`<div class="btns">${flightLinks(f,t,dep,ret,pax).map(([n,u])=>`<a class="btn big" href="${esc(u)}" target="_blank" rel="noopener">${n} ↗</a>`).join('')}</div>
+   <p class="hint" style="margin:0">누르면 각 사이트가 이 날짜·공항으로 열려 실시간 요금을 보여줘요. 결제는 각 사이트에서 직접 하세요.</p>`}
+   <div class="ref">
+    <div class="part"><span class="m">참고 · 가는 편 최근 최저가 (${shipOnly?'배':'항공'})</span>${refLine(city,'go',shipOnly)}</div>
+    <div class="part"><span class="m">참고 · 오는 편 최근 최저가 (${shipOnly?'배':'항공'})</span>${refLine(city,'back',shipOnly)}</div>
+   </div>
+   ${shipLinks.length||shipOnly?`<div class="go">🚢 배는 날짜별 요금을 선사·대리점 예약 페이지에서 직접 골라야 해요.${shipLinks.length?`<div class="btns" style="margin-top:8px">${shipLinks.map(b=>`<a class="btn o" href="${esc(b.cur.src)}" target="_blank" rel="noopener">${esc(b.route)} ${esc(b.cur.carrier||'배')} ↗</a>`).join('')}</div>`:''}</div>`:''}
+   ${cnt?`<a class="tag" href="#clinics" data-city="${esc(city)}" style="justify-self:start;font-size:14px;padding:6px 10px">${esc(city)} 병원 ${cnt}곳 보기 →</a>`:''}`;
+}
+function openSearch(city,from){
+  const ap=AP_OF_CITY[city];if(!ap)return;
+  st.sTo=ap;if(from)st.sFrom=from;save();
+  $('s-to').value=st.sTo;$('s-from').value=st.sFrom;
+  if(location.hash!=='#travel')location.hash='#travel';
+  setTimeout(()=>{$('search').open=true;$('search').scrollIntoView({behavior:'smooth',block:'start'});runSearch()},60);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-search]');if(b){e.preventDefault();openSearch(b.dataset.search,b.dataset.from);return}
+  const a=e.target.closest('#sres [data-city]');if(a){st.city=a.dataset.city;save();buildCityChips()}
+});
 
 /* ---------- 변동 ---------- */
 function renderLog(){
@@ -416,7 +537,7 @@ async function load(name){
   const parts=[];if(C)parts.push(`병원 ${C.updatedAt||''} 갱신`);if(T&&T.updatedAt)parts.push(`항공·배 ${T.updatedAt} 갱신`);
   $('upd').textContent=(parts.join(' · ')||'자료를 불러오지 못했어요')+(l1?'':' (오프라인 저장본)');
   $('fxl').textContent=FX?`환율 100엔 ≈ ₩${fmt(Math.round(FX))}${t.fx.date?' ('+t.fx.date+')':''}`:'';
-  buildCityChips();route();
+  initSearch();buildCityChips();route();
 })();
 
 /* ---------- 홈 화면 추가 ---------- */
