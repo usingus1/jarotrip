@@ -118,6 +118,35 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
 .hide{display:none!important}
+.pstep{border:2px solid var(--ink);margin:14px 0;scroll-margin-top:12px}
+.pstep>h3{margin:0;padding:12px 16px;background:var(--ink);color:var(--bg);font-size:17px;display:flex;gap:10px;align-items:center}
+.pstep>h3 i{font-style:normal;font-family:Archivo,sans-serif;font-weight:800;background:var(--red);color:#fff;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.pstep.off{opacity:.45}
+.pstep.off>h3{background:var(--mute)}
+.pbody{padding:14px 16px;display:grid;gap:12px}
+.pick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
+.pick:last-child{border-bottom:0}
+.pick .nm{font-size:16px}
+.pick .tot{font-size:22px;line-height:1.1;text-align:right}
+.pick .tot small{display:block;font-size:11px;color:var(--mute);font-family:"Noto Sans KR",sans-serif;font-weight:600}
+.pick .why{grid-column:1/-1;font-size:13px;color:var(--mute)}
+.pick .btn{grid-column:1/-1;justify-content:center;height:46px}
+.pick.sel{background:color-mix(in srgb,var(--ok) 10%,transparent);outline:2px solid var(--ok);outline-offset:-2px;padding-inline:10px}
+.cost{width:100%;border-collapse:collapse;font-size:14px}
+.cost td{padding:7px 4px;border-bottom:1px solid var(--line);white-space:normal}
+.cost td:last-child{text-align:right;white-space:nowrap;font-weight:700}
+.cost tr.sum td{border-top:2px solid var(--ink);border-bottom:0;font-size:17px;font-weight:800}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl:before{content:"";position:absolute;left:15px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl li{position:relative;padding:0 0 18px 44px}
+.tl li .dot{position:absolute;left:4px;top:0;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12px;display:flex;align-items:center;justify-content:center}
+.tl li.hi .dot{background:var(--red);color:#fff}
+.tl li b.t{display:block;font-size:16px}
+.tl li .d{font-size:14px;color:var(--mute);margin:2px 0 8px}
+.dayh{font-family:Archivo,"Noto Sans KR",sans-serif;font-weight:800;font-size:13px;color:var(--red);margin:6px 0 10px 44px;letter-spacing:.02em}
+.warn{border-left:4px solid var(--warn);background:var(--soft);padding:10px 12px;font-size:14px}
+.chk{list-style:none;padding:0;margin:0;display:grid;gap:6px;font-size:14px}
+.chk li:before{content:"☐ ";color:var(--mute)}
 .doc{max-width:760px}
 .doc h2{margin-top:28px}
 .doc h3{font-size:17px;margin:18px 0 6px}
@@ -182,7 +211,7 @@ td .kw{display:block;font-size:11px;margin:0}
 .done span{font-weight:600;font-size:13px;opacity:.95;display:block}
 .done b{font-size:22px;line-height:1}
 .loading{padding:18px 0;color:var(--mute);font-size:14px}
-#sres.flash{animation:flash 1.4s ease-out}
+#sres.flash,.pbody.flash{animation:flash 1.4s ease-out}
 @keyframes flash{0%{background:color-mix(in srgb,var(--ok) 22%,transparent)}100%{background:transparent}}
 .serr.shake{animation:shake .4s}
 @keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
@@ -211,10 +240,10 @@ td .kw{display:block;font-size:11px;margin:0}
 
 <nav class="tabs" aria-label="메뉴">
  <a href="#main" data-t="main">홈<small>처음 화면</small></a>
+ <a href="#plan" data-t="plan">여행 짜기<small>병원+항공+동선</small></a>
  <a href="#home" data-t="home">비교<small>도시별 총비용</small></a>
  <a href="#clinics" data-t="clinics">병원<small>용량별 가격</small></a>
  <a href="#travel" data-t="travel">가는 길<small>항공·배 최저가</small></a>
- <a href="#log" data-t="log">변동<small>최근 바뀐 것</small></a>
 </nav>
 
 <main>
@@ -228,7 +257,7 @@ td .kw{display:block;font-size:11px;margin:0}
    <div>
     <h2>일본 마운자로,<br><em>병원부터 항공·숙소까지</em> 한&nbsp;번에</h2>
     <p>한국어로 상담되는 일본 병원의 용량별 가격과 한국↔일본 항공·배편 최저가를 매일 자동으로 모아요. 원화로 바로 비교하고, 날짜만 정하면 항공권과 숙소 검색까지 이어져요.</p>
-    <div class="cta"><a class="btn" href="#home">어느 도시가 쌀까? 비교하기</a><a class="btn o" href="#travel" data-open-search>날짜로 여행 짜기</a></div>
+    <div class="cta"><a class="btn" href="#plan">여행 한 번에 짜기</a><a class="btn o" href="#plan">병원+항공 한 번에 짜기</a></div>
    </div>
    <div class="fig" aria-hidden="true">
     <svg viewBox="0 0 360 240" preserveAspectRatio="xMidYMid meet">
@@ -256,10 +285,11 @@ td .kw{display:block;font-size:11px;margin:0}
   </div>
   <div class="stats" id="stats"></div>
   <div class="menu">
-   <a class="main" href="#home"><i>📊</i><b>도시별 총비용 비교</b><span>병원 + 왕복 교통을 원화로 한눈에</span></a>
+   <a class="main" href="#plan"><i>🧭</i><b>여행 한 번에 짜기</b><span>날짜 → 병원 → 항공·숙소·동선까지</span></a>
+   <a href="#home"><i>📊</i><b>도시별 총비용 비교</b><span>병원 + 왕복 교통을 원화로 한눈에</span></a>
    <a href="#clinics"><i>🏥</i><b>병원 가격 보기</b><span id="m-clinics">한국어 상담 병원 용량별 가격</span></a>
    <a href="#travel"><i>✈️</i><b>항공·배편 최저가</b><span>가는 편·오는 편 매일 조회</span></a>
-   <a href="#travel" data-open-search><i>📅</i><b>날짜로 여행 짜기</b><span>항공권·근처 숙소 바로 검색</span></a>
+   <a href="#log"><i>🔔</i><b>최근 바뀐 것</b><span>가격·예약 상황·운임 변동</span></a>
   </div>
   <h2>이렇게 써요</h2>
   <ol class="steps">
@@ -324,6 +354,38 @@ td .kw{display:block;font-size:11px;margin:0}
  <section id="p-log" class="hide">
   <h2>최근 바뀐 것</h2>
   <ul class="log" id="log"></ul>
+ </section>
+
+ <section id="p-plan" class="hide">
+  <h2>여행 한 번에 짜기</h2>
+  <p class="hint">날짜와 출발지를 고르면 갈 수 있는 병원을 예상 총액 순으로 보여 주고, 고른 병원에 맞춰 하루하루 동선과 예약 버튼까지 한 번에 만들어 드려요.</p>
+
+  <div class="pstep" id="ps1">
+   <h3><i>1</i>여행 조건</h3>
+   <form class="pbody" id="pf" novalidate>
+    <div class="sgrid">
+     <label>출발 (한국)<select id="p-from"></select></label>
+     <label>인원 (성인)<select id="p-pax"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+     <label>가는 날<input type="date" id="p-dep"></label>
+     <label>오는 날<input type="date" id="p-ret"></label>
+    </div>
+    <div class="quick" id="p-quick"><span class="lab" style="align-self:center">머무는 기간</span><button type="button" data-n="1">1박 2일</button><button type="button" data-n="2">2박 3일</button><button type="button" data-n="3">3박 4일</button></div>
+    <div class="line" id="p-doses"><span class="lab">용량</span></div>
+    <div class="line" id="p-periods"><span class="lab">기간</span></div>
+    <p class="serr" id="p-err" role="alert" hidden></p>
+    <button class="btn big sbtn" type="submit" id="p-go">이 조건으로 병원 고르기 →</button>
+   </form>
+  </div>
+
+  <div class="pstep off" id="ps2">
+   <h3><i>2</i>병원 고르기</h3>
+   <div class="pbody" id="p-list"><p class="hint" style="margin:0">1단계 조건을 정하면 여기에 병원이 나와요.</p></div>
+  </div>
+
+  <div class="pstep off" id="ps3">
+   <h3><i>3</i>나의 여행 플랜</h3>
+   <div class="pbody" id="p-plan-out"><p class="hint" style="margin:0">2단계에서 병원을 고르면 동선이 완성돼요.</p></div>
+  </div>
  </section>
 
  <section id="p-about" class="hide doc">
@@ -522,7 +584,7 @@ function renderClinics(){
       ${tr||bk?`<div class="go">✈ ${tr?`가는 편 최저 <b>${esc(tr.route)} ${esc(tr.mode)} <span class="num">₩${fmt(tr.cur.price)}</span></b>${tr.cur.dep?' ('+esc(tr.cur.dep)+')':''}`:''}${bk?`<br>✈ 오는 편 최저 <b>${esc(bk.route)} ${esc(bk.mode)} <span class="num">₩${fmt(bk.cur.price)}</span></b>${bk.cur.dep?' ('+esc(bk.cur.dep)+')':''}`:''}</div>`:''}
       ${/온라인|전국/.test(c.city)?'':stayBox(c)}
       <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
-      <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}${AP_OF_CITY[c.city]?`<button class="btn o" data-search="${esc(c.city)}">✈ 날짜로 항공권 찾기</button>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
+      <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}${AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')?`<button class="btn" data-plan="${esc(c.name)}">🧭 이 병원으로 여행 짜기</button>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
      </div></details>`;
   }).join(''):'<p class="empty">조건에 맞는 병원이 없어요. 필터를 줄여 보세요.</p>';
 }
@@ -724,6 +786,147 @@ function renderLog(){
   $('log').innerHTML=items.slice(0,150).map(r=>`<li><span class="num">${esc(r.d)}</span><div><span class="k">${esc(r.k)}</span><b>${esc(r.n)}</b><div>${esc(r.t)}</div></div>${r.s?`<span class="s">${esc(r.s)}</span>`:''}</li>`).join('')||'<li>기록 없음</li>';
 }
 
+/* ---------- 여행 짜기 ---------- */
+const AIRPORT_HINT={
+  FUK:{name:'후쿠오카 공항',hint:'국제선 터미널에서 하카타역·텐진까지 버스·지하철로 약 15~30분. 도심과 가까워 도착 당일 진료 잡기 쉬워요.'},
+  KIX:{name:'간사이 국제공항',hint:'난바(신사이바시 근처)까지 난카이 전철로 약 40~50분, 교토까지는 특급 하루카로 약 75분.'},
+  NRT:{name:'나리타 공항',hint:'도쿄역·긴자까지 전철·리무진 버스로 약 60~90분. 하네다 도착 항공편이 있으면 30~50분으로 더 가까워요.'},
+  HND:{name:'하네다 공항',hint:'긴자·신주쿠까지 전철로 약 30~50분.'},
+  NGO:{name:'주부 국제공항',hint:'나고야역까지 메이테츠 전철로 약 30~40분.'},
+  CTS:{name:'신치토세 공항',hint:'삿포로역까지 JR 쾌속으로 약 40분.'},
+  HIJ:{name:'히로시마 공항',hint:'히로시마역까지 리무진 버스로 약 45~55분.'},
+  KOJ:{name:'가고시마 공항',hint:'가고시마추오역까지 버스로 약 40분.'}
+};
+const fromToGroup=c=>c==='PUS'?'부산':(c==='ICN'||c==='GMP')?'인천·김포':'';
+function refFare(city,dir,group){
+  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(!group||fromGroup(krSide(x))===group)).sort((a,c)=>a.cur.price-c.cur.price);
+  return b[0]||null;
+}
+function planOk(){const t=todayStr();return st.pDep&&st.pDep>=t&&st.pRet&&st.pRet>st.pDep}
+function planCandidates(){
+  const k=key(),g=fromToGroup(st.pFrom);
+  return C.clinics.filter(c=>c.p[k]&&AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')&&c.tour!=='중단').map(c=>{
+    const won=yen2won(c.p[k]),go=refFare(c.city,'go',g),bk=refFare(c.city,'back',g);
+    const total=won!=null?won+(go?go.cur.price:0)+(bk?bk.cur.price:0):null;
+    return {c,won,go,bk,total,full:!!(go&&bk),known:(go?1:0)+(bk?1:0),closed:/마감|중단|빈자리 없음/.test(c.status||'')};
+  }).sort((a,b)=>(b.known-a.known)||(a.closed-b.closed)||((a.total??1e12)-(b.total??1e12)));
+}
+function renderPlanList(){
+  if(!C)return;
+  const L=planCandidates(),k=key();
+  $('p-list').innerHTML=`<p class="hint" style="margin:0">${keyLabel()} · ${esc(apName(st.pFrom))} 출발 기준이에요. <b>교통 운임이 확인된 곳</b>을 먼저, 그 안에서 병원비(원화) + 교통 최저가를 더한 <b>예상 총액이 낮은 순</b>으로 보여 줘요. 숙박비는 빠져 있어요.</p>`+
+  (L.length?L.map(x=>{const c=x.c;return `<div class="pick ${st.pClinic===c.name?'sel':''}">
+    <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)} · ¥${fmt(c.p[k])}${x.won?' ≈ '+man(x.won)+'원':''}</div><div class="tags">${tagFor(c)}</div></div>
+    <div class="tot num">${x.total?'≈₩'+man(x.total):'¥'+fmt(c.p[k])}<small>${x.full?'병원+왕복 교통':x.go?'병원+가는 편':'병원만'}</small></div>
+    <div class="why">${x.go?`가는 편 ${esc(x.go.mode)} ₩${fmt(x.go.cur.price)}`:'가는 편 운임 수집 중'} · ${x.bk?`오는 편 ${esc(x.bk.mode)} ₩${fmt(x.bk.cur.price)}`:'오는 편 운임 수집 중'}${c.status&&c.status!=='확인 필요'?' · '+esc(c.status):''}</div>
+    <button class="btn ${st.pClinic===c.name?'':'o'}" data-plan="${esc(c.name)}">${st.pClinic===c.name?'✓ 이 병원으로 짜는 중':'이 병원으로 여행 짜기'}</button>
+   </div>`}).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 없어요. 용량이나 기간을 바꿔 보세요.</div>`);
+}
+function planText(c,ap,dep,ret,n){
+  return `[자로트립 여행 플랜]\n${md(dep)} ~ ${md(ret)} (${n}박 ${n+1}일)\n${apName(st.pFrom)} ⇄ ${AIRPORT_HINT[ap]?.name||ap}\n병원: ${c.name} (${c.city}) · ${keyLabel()} ¥${fmt(c.p[key()])}\n${c.contact?'연락: '+c.contact+'\n':''}${safeUrl(c.url)?c.url+'\n':''}${location.href.split('#')[0]}`;
+}
+function renderPlan(){
+  const c=C&&C.clinics.find(x=>x.name===st.pClinic);
+  if(!c||!planOk()){$('p-plan-out').innerHTML='<p class="hint" style="margin:0">2단계에서 병원을 고르면 동선이 완성돼요.</p>';return false}
+  const k=key(),dep=st.pDep,ret=st.pRet,n=Math.round((new Date(ret)-new Date(dep))/864e5),pax=st.pPax||'1';
+  const ap=AP_OF_CITY[c.city],AH=AIRPORT_HINT[ap]||{name:apName(ap),hint:''};
+  const g=fromToGroup(st.pFrom),go=refFare(c.city,'go',g),bk=refFare(c.city,'back',g),won=yen2won(c.p[k]);
+  const fl=flightLinks(st.pFrom,ap,dep,ret,pax);
+  const stays=stayLinks(c,dep,ret,pax);
+  const addr=(c.addr&&!/온라인/.test(c.addr))?c.addr.split('/')[0]:c.city;
+  const dest=encodeURIComponent(plainName(c)+' '+addr);
+  const dir=(o,d)=>`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(o)}&destination=${d}&travelmode=transit`;
+  const ship=c.ship&&!/^없음|미기재/.test(c.ship);
+  const tight=n<1, closed=/마감|중단|없음|빈자리/.test(c.status||'');
+  const sum=(won||0)+(go?go.cur.price:0)+(bk?bk.cur.price:0);
+  const btn=(t,u,o)=>`<a class="btn ${o?'o':''}" href="${esc(u)}" target="_blank" rel="noopener">${t} ↗</a>`;
+  const days=[];
+  days.push({h:`DAY 1 · ${md(dep)}`,items:[
+    {hi:1,t:`✈ ${apName(st.pFrom)} → ${AH.name}`,d:`항공권은 아래 버튼에서 이 날짜로 바로 찾을 수 있어요.${go?` 최근 이 구간 최저가 ₩${fmt(go.cur.price)}(${esc(go.cur.carrier||go.mode)}).`:''}`,b:fl.map(([t,u],i)=>btn(t,u,i)).join('')},
+    {t:`🚆 공항 → ${esc(c.city)} 시내`,d:esc(AH.hint)+' 정확한 경로와 시간은 지도 길찾기에서 확인하세요.',b:btn('공항 → 병원 길찾기',dir(AH.name,dest),1)},
+    n>=1?{t:'🏨 병원 근처 숙소 체크인',d:`${esc(areaOf(c))} 주변으로 ${n}박 숙소를 같은 날짜로 찾아 드려요. 처방받은 펜은 숙소 냉장고에 보관해야 하니 객실 냉장고가 있는 곳을 고르세요.`,b:stays.map(([t,u],i)=>btn(t,u,i)).join('')}:null,
+    {hi:1,t:`🏥 ${esc(c.name)} 진료·처방`,d:`${n>=1?'도착 당일 오후나 2일차 오전으로 예약하면 일정이 여유로워요.':'당일치기라 진료 시간을 꼭 미리 확정하세요.'} 예약은 ${esc(c.contact||'병원 공식 페이지')}로 하세요.${c.status&&c.status!=='확인 필요'?' 현재 예약 상황: '+esc(c.status):''}`,b:(safeUrl(c.url)?btn('병원 공식 페이지',c.url):'')+btn('병원 위치',`https://www.google.com/maps/search/?api=1&query=${dest}`,1)}
+  ].filter(Boolean)});
+  if(n>=2)days.push({h:`DAY 2${n>2?' ~ '+(n):''} · ${md(addDays(dep,1))}${n>2?' ~ '+md(addDays(dep,n-1)):''}`,items:[{t:'🗾 자유 일정',d:'진료를 아직 못 받았다면 이날 오전에 받으세요. 펜은 들고 다니지 말고 숙소 냉장고에 두세요.'}]});
+  days.push({h:`DAY ${n+1} · ${md(ret)}`,items:[
+    {t:'🧊 체크아웃·약 챙기기',d:'펜은 보냉 파우치나 아이스팩과 함께 기내 반입 가방에 넣으세요. 위탁 수하물칸은 얼 수 있어요. 처방전·영문 증명서도 같이 챙기세요.'},
+    {t:`🚆 시내 → ${AH.name}`,d:'국제선은 출발 2시간 전 도착을 권장해요.',b:btn('병원 근처 → 공항 길찾기',dir(plainName(c)+' '+addr,encodeURIComponent(AH.name)),1)},
+    {hi:1,t:`✈ ${AH.name} → ${apName(st.pFrom)}`,d:`귀국 시 본인 치료용 3개월분 이내만 반입할 수 있어요. 세관 신고가 필요한지 미리 확인하세요.${bk?` 최근 이 구간 최저가 ₩${fmt(bk.cur.price)}.`:''}`}
+  ]});
+  $('p-plan-out').innerHTML=`
+   <div class="sum"><b>${md(dep)} ~ ${md(ret)} · ${n}박 ${n+1}일</b><br>${esc(apName(st.pFrom))} ⇄ ${esc(AH.name)} · 성인 ${esc(pax)}명 · ${esc(c.name)}</div>
+   ${tight?'<div class="warn">당일치기는 항공 시간과 진료 시간이 겹치기 쉬워요. 1박 이상을 추천해요.</div>':''}
+   ${closed?`<div class="warn">이 병원은 현재 "${esc(c.status)}" 상태예요. 예약 가능 여부를 먼저 확인하세요.</div>`:''}
+   ${c.tour&&c.tour!=='확인'?`<div class="warn">관광객 처방이 "${esc(c.tour)}" 상태예요. 방문 전 꼭 문의하세요.</div>`:''}
+   <table class="cost"><tbody>
+    <tr><td>병원 (${keyLabel()})</td><td>¥${fmt(c.p[k])}${won?' ≈ ₩'+fmt(Math.round(won/100)*100):''}</td></tr>
+    <tr><td>가는 편 (최근 최저가 참고)</td><td>${go?'₩'+fmt(go.cur.price):'수집 중'}</td></tr>
+    <tr><td>오는 편 (최근 최저가 참고)</td><td>${bk?'₩'+fmt(bk.cur.price):'수집 중'}</td></tr>
+    <tr><td>숙박 ${n}박</td><td>예약 시 확인</td></tr>
+    <tr class="sum"><td>예상 합계 (숙박 제외, 1인)${go&&bk?'':'<br><small style="font-weight:600;color:var(--mute)">교통비 일부 수집 중이라 빠져 있어요</small>'}</td><td>≈ ₩${fmt(Math.round(sum/1000)*1000)}</td></tr>
+   </tbody></table>
+   <p class="hint" style="margin:0">교통비는 날짜와 상관없는 최근 최저가라 실제 고른 날짜 요금과 다를 수 있어요. 정확한 요금은 아래 항공권 버튼에서 확인하세요.</p>
+   <h3 style="margin:8px 0 0">추천 동선</h3>
+   ${days.map(dd=>`<div class="dayh">${dd.h}</div><ol class="tl">${dd.items.map((it,i)=>`<li class="${it.hi?'hi':''}"><span class="dot">${i+1}</span><b class="t">${it.t}</b><div class="d">${it.d}</div>${it.b?`<div class="btns">${it.b}</div>`:''}</li>`).join('')}</ol>`).join('')}
+   ${ship?`<div class="go">💡 이 병원은 <b>${esc(c.ship)}</b>도 돼요. 출국 전에 온라인 진료를 받고 숙소로 받으면 병원 방문 없이 일정을 짤 수 있어요.</div>`:''}
+   <h3 style="margin:8px 0 0">준비물 체크</h3>
+   <ul class="chk"><li>여권 (병원에서 본인 확인)</li><li>진료 예약 확인 (${esc(c.contact||'병원 연락처')})</li><li>보냉 파우치·아이스팩</li><li>처방전·영문 증명서 (병원에 따라 유료, 가격 메모 확인)</li><li>귀국 반입 3개월분 이내 확인</li></ul>
+   <div class="btns"><button class="btn" data-copy="${esc(planText(c,ap,dep,ret,n))}">플랜 복사해서 보내기</button><button class="btn o" id="p-change">다른 병원 고르기</button></div>`;
+  $('p-change').onclick=()=>{$('ps2').scrollIntoView({behavior:'smooth',block:'start'})};
+  return true;
+}
+function flashTo(id,msg){
+  const el=$(id);el.classList.remove('off');
+  const body=el.querySelector('.pbody');
+  if(msg)body.insertAdjacentHTML('afterbegin',`<div class="done" role="status"><b>✓</b><div>${msg}</div></div>`);
+  body.classList.remove('flash');void body.offsetWidth;body.classList.add('flash');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  try{navigator.vibrate&&navigator.vibrate(30)}catch(_){}
+}
+function initPlan(){
+  $('p-from').innerHTML=KR_AP.map(([c,n])=>`<option value="${c}">${n} (${c})</option>`).join('');
+  const t=todayStr();
+  if(!st.pDep||st.pDep<t){st.pDep=st.sDep&&st.sDep>=t?st.sDep:addDays(t,14)}
+  if(!st.pRet||st.pRet<=st.pDep){st.pRet=st.sRet&&st.sRet>st.pDep?st.sRet:addDays(st.pDep,2)}
+  st.pFrom=st.pFrom||st.sFrom||'PUS';st.pPax=st.pPax||st.sPax||'1';
+  $('p-from').value=st.pFrom;$('p-pax').value=st.pPax;$('p-dep').value=st.pDep;$('p-ret').value=st.pRet;$('p-dep').min=t;$('p-ret').min=addDays(st.pDep,1);
+  chips('p-doses',DOSES.map(x=>[x,x+'mg']),'dose','dose',refreshPlan);
+  chips('p-periods',[['1','1개월'],['3','3개월']],'period','',refreshPlan);
+  const sync=()=>{st.pFrom=$('p-from').value;st.pPax=$('p-pax').value;st.pDep=$('p-dep').value;st.pRet=$('p-ret').value;$('p-ret').min=st.pDep?addDays(st.pDep,1):t;st.sFrom=st.pFrom;st.sDep=st.pDep;st.sRet=st.pRet;st.sPax=st.pPax;save()};
+  ['p-from','p-pax','p-dep','p-ret'].forEach(id=>$(id).addEventListener('change',()=>{sync();refreshPlan()}));
+  $('p-quick').onclick=e=>{const b=e.target.closest('button[data-n]');if(!b)return;if(!$('p-dep').value)$('p-dep').value=addDays(t,14);$('p-ret').value=addDays($('p-dep').value,+b.dataset.n);sync();refreshPlan()};
+  $('pf').onsubmit=e=>{
+    e.preventDefault();sync();
+    const err=m=>{const x=$('p-err');x.textContent=m;x.hidden=false;x.classList.remove('shake');void x.offsetWidth;x.classList.add('shake')};
+    $('p-err').hidden=true;
+    if(!st.pDep||st.pDep<t)return err('가는 날을 오늘 이후로 골라 주세요.');
+    if(!st.pRet||st.pRet<=st.pDep)return err('오는 날은 가는 날보다 뒤여야 해요.');
+    const b=$('p-go');b.setAttribute('aria-busy','true');b.textContent='병원 찾는 중…';
+    setTimeout(()=>{b.removeAttribute('aria-busy');b.textContent='✓ 조건 적용됨 · 다시 찾기';renderPlanList();
+      const cnt=planCandidates().length;flashTo('ps2',`${md(st.pDep)} ~ ${md(st.pRet)} 조건으로 갈 수 있는 병원 ${cnt}곳을 찾았어요.<span>예상 총액이 낮은 순서예요. 마음에 드는 병원의 버튼을 누르세요.</span>`);
+      if(st.pClinic)renderPlan()},400);
+  };
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-plan]');if(!b)return;
+    st.pClinic=b.dataset.plan;save();
+    if(location.hash!=='#plan'){location.hash='#plan';return}
+    if(!planOk()){$('ps1').scrollIntoView({behavior:'smooth'});return}
+    renderPlanList();
+    if(renderPlan())flashTo('ps3',`${esc(st.pClinic)}로 여행 플랜을 만들었어요.<span>아래 동선 순서대로 버튼을 누르면 항공권·숙소·길찾기가 이 날짜로 열려요.</span>`);
+  });
+}
+function refreshPlan(){if(location.hash.slice(1)!=='plan')return;if(planOk()){renderPlanList();if(st.pClinic)renderPlan()}}
+function renderPlanTab(){
+  if(!C)return;
+  const ready=planOk();
+  $('ps2').classList.toggle('off',!ready);$('ps3').classList.toggle('off',!(ready&&st.pClinic));
+  chips('p-doses',DOSES.map(x=>[x,x+'mg']),'dose','dose',refreshPlan);
+  chips('p-periods',[['1','1개월'],['3','3개월']],'period','',refreshPlan);
+  if(ready){renderPlanList();if(st.pClinic&&renderPlan()&&planJump){planJump=false;setTimeout(()=>$('ps3').scrollIntoView({behavior:'smooth',block:'start'}),60)}}
+}
+let planJump=false;
+document.addEventListener('click',e=>{if(e.target.closest('[data-plan]')&&location.hash!=='#plan')planJump=true},true);
+
 /* ---------- 메인 ---------- */
 function renderMain(){
   if(!C)return;
@@ -739,7 +942,7 @@ function renderMain(){
 document.addEventListener('click',e=>{const a=e.target.closest('[data-open-search]');if(!a)return;setTimeout(()=>{$('search').open=true;$('search').scrollIntoView({behavior:'smooth',block:'start'});$('s-dep').focus({preventScroll:true})},80)});
 
 /* ---------- 라우팅 ---------- */
-const TABS=['main','home','clinics','travel','log','about'];
+const TABS=['main','plan','home','clinics','travel','log','about'];
 function route(){
   const t=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'main';
   TABS.forEach(x=>{$('p-'+x).classList.toggle('hide',x!==t);const n=document.querySelector(`nav a[data-t=${x}]`);if(n){n.toggleAttribute('aria-current',x===t);if(x===t)n.setAttribute('aria-current','page')}});
@@ -752,6 +955,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-jump]');if
 function renderAll(){
   const h=location.hash.slice(1),t=TABS.includes(h)?h:'main';
   if(t==='about')return;
+  if(t==='plan'){renderPlanTab();return}
   if(t==='main')renderMain();else if(t==='clinics')renderClinics();else if(t==='travel')renderTravel();else if(t==='log')renderLog();else renderHome();
 }
 addEventListener('hashchange',route);
@@ -775,7 +979,7 @@ async function load(name){
   const parts=[];if(C)parts.push(`병원 ${C.updatedAt||''} 갱신`);if(T&&T.updatedAt)parts.push(`항공·배 ${T.updatedAt} 갱신`);
   $('upd').textContent=(parts.join(' · ')||'자료를 불러오지 못했어요')+(l1?'':' (오프라인 저장본)');
   $('fxl').textContent=FX?`환율 100엔 ≈ ₩${fmt(Math.round(FX))}${t.fx.date?' ('+t.fx.date+')':''}`:'';
-  initSearch();buildCityChips();route();
+  initSearch();initPlan();buildCityChips();route();
 })();
 
 /* ---------- 홈 화면 추가 ---------- */
