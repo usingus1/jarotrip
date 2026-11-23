@@ -4,52 +4,72 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111111">
-<meta name="description" content="일본에서 한국어로 마운자로 상담·처방 안내를 하는 병원의 용량별 가격과 예약 상황. 매일 자동 갱신.">
+<meta name="description" content="자로트립 — 일본 마운자로 한국어 병원 가격과 한국→일본 항공·배편 최저가를 한 곳에서. 매일 자동 갱신.">
+<meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="마운자로 병원">
-<meta name="robots" content="noindex">
-<title>일본 마운자로 병원 가이드</title>
+<meta name="apple-mobile-web-app-title" content="자로트립">
+<title>자로트립 · 일본 마운자로 병원·항공·배편</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE: 역 시간표처럼 단정하고 빠르게 읽히는 실용 도구
-   IDEA: 스위스 역 출발 안내판 — 병원이 "열차", 가격이 "출발 시각"
-   PICTURE: 큰 엔화 숫자가 왼쪽에 매달린 가격 보드 리스트 자체
+/* VOICE: 역 시간표처럼 단정하고 빠르게 읽히는 여행 준비 도구
+   IDEA: 스위스 역 출발 안내판 — 도시가 "행선지", 총비용이 "출발 시각"
+   PICTURE: 도시별 총비용 보드(병원 최저가 + 편도 교통 최저가)
    COLOUR and TYPE: 흰 바탕, 검정, 신호 빨강 #e4002b, 회색 하나 / Archivo 확장 800 + Noto Sans KR
-   LAYOUT: 굵은 상단 룰, 왼쪽 넓은 숫자 열, 모바일 한 열 */
+   LAYOUT: 굵은 상단 룰, 왼쪽 큰 숫자 열, 하단 고정 탭(모바일) */
 :root{color-scheme:light dark;--bg:light-dark(#fff,#0e0e0e);--ink:light-dark(#111,#f2f2f2);--mute:light-dark(#6b6b6b,#9a9a9a);--line:light-dark(#e3e3e3,#2a2a2a);--soft:light-dark(#f4f4f4,#1a1a1a);--red:#e4002b;--ok:light-dark(#0a7a3d,#4fd18b);--warn:light-dark(#9a6a00,#f2c14e)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;word-break:keep-all;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip;word-break:keep-all;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
 .num{font-family:Archivo,"Noto Sans KR",sans-serif;font-stretch:112%;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
-header{border-top:10px solid var(--ink);padding:22px max(5vw,16px) 14px;max-width:1240px;margin:0 auto}
-h1{font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0;font-weight:800;text-wrap:balance;letter-spacing:-.01em}
-.sub{color:var(--mute);margin:8px 0 0;font-size:14px;display:flex;flex-wrap:wrap;gap:4px 14px}
-.sub b{color:var(--ink)}
-.live{display:inline-flex;align-items:center;gap:6px}.live i{width:8px;height:8px;border-radius:50%;background:var(--mute)}.live.on i{background:var(--red)}
+header{border-top:10px solid var(--ink);padding:18px max(5vw,16px) 6px;max-width:1240px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h1{font-size:clamp(34px,6vw,52px);line-height:1;margin:0;font-weight:800;letter-spacing:-.02em}
+h1 b{color:var(--red)}
+.tag-line{font-size:15px;font-weight:600}
+.sub{color:var(--mute);margin:8px 0 0;font-size:13px;display:flex;flex-wrap:wrap;gap:2px 14px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px}
 main{max-width:1240px;margin:0 auto;padding:0 max(5vw,16px) 40px}
-.tabs{display:flex;gap:0;border-bottom:3px solid var(--ink);margin-top:6px}
-.tabs button{all:unset;cursor:pointer;padding:10px 16px;font-weight:800;font-size:15px;min-height:44px;box-sizing:border-box;display:flex;align-items:center}
-.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg)}
-.tabs button:focus-visible,.chip:focus-visible,.row summary:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
-.ctl{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line);display:grid;gap:10px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs a{color:var(--bg);text-decoration:none;text-align:center;font-weight:800;font-size:14px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:.6}
+nav.tabs a small{font-size:11px;font-weight:600}
+nav.tabs a[aria-current=page]{opacity:1;box-shadow:inset 0 4px 0 var(--red)}
+@media(min-width:900px){body{padding-bottom:0}nav.tabs{position:sticky;top:0;bottom:auto;max-width:1240px;margin:8px auto 0;grid-template-columns:repeat(4,max-content);gap:0;background:var(--bg);border-bottom:3px solid var(--ink);padding:0 max(5vw,16px)}nav.tabs a{color:var(--ink);height:48px;padding:0 18px;flex-direction:row;gap:8px;opacity:1}nav.tabs a[aria-current=page]{background:var(--ink);color:var(--bg);box-shadow:none}}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.ctl{padding:12px 0 10px;border-bottom:1px solid var(--line);display:grid;gap:10px}
 .line{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.line::-webkit-scrollbar{display:none}
-.lab{font-size:13px;color:var(--mute);flex:none;width:3.2em}
+.lab{font-size:13px;color:var(--mute);flex:none;min-width:2.6em}
 .chip{all:unset;cursor:pointer;flex:none;border:1.5px solid var(--ink);padding:0 14px;height:40px;display:inline-flex;align-items:center;font-weight:600;font-size:15px;box-sizing:border-box}
 .chip[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .chip.dose[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
 .tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 input[type=search],select{font:inherit;font-size:16px;height:44px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);padding:0 12px;border-radius:0}
-.toggles{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
-.toggles label{display:inline-flex;gap:6px;align-items:center;min-height:32px;cursor:pointer}
+.toggles{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px}
+.toggles label{display:inline-flex;gap:6px;align-items:center;min-height:36px;cursor:pointer}
 .toggles input{width:18px;height:18px;accent-color:var(--red)}
 .count{font-size:13px;color:var(--mute);margin:14px 0 4px}
+h2{font-size:22px;margin:22px 0 4px;line-height:1.2}
+.hint{font-size:14px;color:var(--mute);margin:0 0 8px}
+/* 한눈에 */
+.city{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:16px 0;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit}
+.city:hover .cn{text-decoration:underline;text-decoration-color:var(--red)}
+.cn{font-size:22px;font-weight:800;line-height:1.2}
+.total{text-align:right}
+.total .num{font-size:clamp(26px,6vw,40px);line-height:1}
+.total small{display:block;font-size:12px;color:var(--mute);margin-top:4px}
+.parts{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.part{background:var(--soft);padding:10px 12px;font-size:13px;line-height:1.45}
+.part b{display:block;font-size:17px}
+.part .num{font-size:17px}
+.part .m{color:var(--mute)}
+.best1 .total .num{color:var(--red)}
+/* 병원 */
 .row{border-bottom:1px solid var(--line)}
-.row summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:clamp(118px,26vw,210px) minmax(0,1fr) 20px;gap:14px;align-items:start;padding:16px 0}
+.row summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:clamp(112px,26vw,210px) minmax(0,1fr) 18px;gap:14px;align-items:start;padding:16px 0}
 .row summary::-webkit-details-marker{display:none}
 .price{font-size:clamp(26px,5vw,40px);line-height:1}
 .price small{font-size:.5em;margin-right:2px}
@@ -67,7 +87,7 @@ input[type=search],select{font:inherit;font-size:16px;height:44px;border:1.5px s
 .arw{transition:transform .2s;margin-top:4px;font-weight:800}
 details[open] .arw{transform:rotate(90deg)}
 @media(prefers-reduced-motion:reduce){.arw{transition:none}}
-.det{padding:0 0 20px;margin-left:calc(clamp(118px,26vw,210px) + 14px);display:grid;gap:14px}
+.det{padding:0 0 20px;margin-left:calc(clamp(112px,26vw,210px) + 14px);display:grid;gap:14px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
@@ -76,53 +96,70 @@ td.hl{color:var(--red);font-weight:800}
 dl{margin:0;display:grid;grid-template-columns:7em minmax(0,1fr);gap:6px 12px;font-size:14px}
 dt{color:var(--mute)}dd{margin:0;overflow-wrap:anywhere}
 a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
-.btn{display:inline-flex;align-items:center;height:44px;padding:0 16px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:800;font-size:14px}
-.empty{padding:40px 0;color:var(--mute);text-align:center}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;height:44px;padding:0 16px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:800;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+.btn.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.go{background:var(--soft);padding:10px 12px;font-size:14px}
+/* 가는 길 */
+.tr{display:grid;grid-template-columns:clamp(112px,26vw,210px) minmax(0,1fr);gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.mode{display:inline-block;font-size:12px;font-weight:800;padding:1px 7px;background:var(--ink);color:var(--bg);margin-right:6px;vertical-align:2px}
+.mode.ship{background:#1d4ed8;color:#fff}
+.chg{font-size:12px;margin-top:6px}.chg.dn{color:var(--ok)}.chg.up{color:var(--red)}
+.spark{display:block;width:100%;max-width:160px;height:34px;margin-top:8px}
+.empty{padding:34px 16px;color:var(--mute);text-align:center;background:var(--soft);margin-top:14px}
 .log{list-style:none;padding:0;margin:14px 0}
 .log li{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:4px 14px;padding:12px 0;border-bottom:1px solid var(--line)}
-.log .d{font-size:15px}
 .log .k{display:inline-block;font-size:12px;font-weight:800;color:var(--red);margin-right:6px}
 .log .s{font-size:12px;color:var(--mute);grid-column:2}
 .note{font-size:13px;color:var(--mute);border-top:3px solid var(--ink);padding-top:14px;margin-top:28px;line-height:1.7}
 .note p{margin:0 0 8px}
-.hide{display:none}
 .inst{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--soft);border-left:4px solid var(--red);padding:10px 12px;margin:12px 0 0;font-size:14px}
-.inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);flex:none}
+.inst span:last-child{display:flex;align-items:center;gap:4px;flex:none}
+.inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
+.hide{display:none!important}
 @media(max-width:600px){
- .ctl{position:static}
- .row summary{grid-template-columns:104px minmax(0,1fr) 14px;gap:12px}
+ .row summary,.tr{grid-template-columns:104px minmax(0,1fr) 14px;gap:12px}
+ .tr{grid-template-columns:104px minmax(0,1fr)}
  .det{margin-left:0}
- .lab{width:auto}
  dl{grid-template-columns:5.5em minmax(0,1fr)}
  table{font-size:13px}th,td{padding:5px 5px}
+ .parts{grid-template-columns:minmax(0,1fr)}
 }
 </style>
 </head>
 <body>
 <header>
- <h1>일본 마운자로, 한국어로 되는 병원</h1>
- <p class="sub"><span><b id="cnt">–</b>곳 · 1개월(4펜)·3개월(12펜) 총액, 엔·세금 포함</span><span class="live" id="live"><i></i><span id="upd">불러오는 중…</span></span></p>
+ <div class="brand"><h1>자로<b>트립</b></h1><span class="tag-line">일본 마운자로 병원 · 항공 · 배편을 한 곳에서</span></div>
+ <p class="sub"><span><span class="dot"></span><span id="upd">불러오는 중…</span></span><span id="fxl"></span></p>
+ <div class="inst hide" id="inst"><span id="inst-t">홈 화면에 추가하면 앱처럼 바로 열 수 있어요.</span><span><button id="inst-b" class="hide">설치</button><button class="x" id="inst-x" aria-label="닫기">✕</button></span></div>
 </header>
+
+<nav class="tabs" aria-label="메뉴">
+ <a href="#home" data-t="home">한눈에<small>도시별 총비용</small></a>
+ <a href="#clinics" data-t="clinics">병원<small>용량별 가격</small></a>
+ <a href="#travel" data-t="travel">가는 길<small>항공·배 최저가</small></a>
+ <a href="#log" data-t="log">변동<small>최근 바뀐 것</small></a>
+</nav>
+
 <main>
- <div class="inst hide" id="inst"><span id="inst-t">홈 화면에 추가하면 앱처럼 바로 열 수 있어요.</span><span style="display:flex;align-items:center;gap:4px;flex:none"><button id="inst-b" class="hide">설치</button><button class="x" id="inst-x" aria-label="닫기">✕</button></span></div>
- <div class="tabs" role="tablist">
-  <button role="tab" id="t-list" aria-selected="true">병원 목록</button>
-  <button role="tab" id="t-log" aria-selected="false">변경 기록</button>
+ <div class="ctl" id="doseCtl">
+  <div class="line" id="doses"><span class="lab">용량</span></div>
+  <div class="line" id="periods"><span class="lab">기간</span></div>
  </div>
 
- <section id="p-list">
+ <section id="p-home">
+  <h2>어느 도시가 가장 저렴할까?</h2>
+  <p class="hint">고른 용량의 병원 최저가에 한국에서 가는 편도 최저가를 더한 예상 금액이에요. 도시를 누르면 그 도시 병원만 볼 수 있어요.</p>
+  <div id="cities"></div>
+ </section>
+
+ <section id="p-clinics" class="hide">
   <div class="ctl">
-   <div class="line" id="doses"><span class="lab">용량</span></div>
-   <div class="line" id="periods"><span class="lab">기간</span></div>
-   <div class="line" id="cities"><span class="lab">지역</span></div>
+   <div class="line" id="cityChips"><span class="lab">지역</span></div>
    <div class="tools">
     <input type="search" id="q" placeholder="병원명·주소·메모 검색" aria-label="검색">
-    <select id="sort" aria-label="정렬">
-     <option value="price">가격 낮은 순</option>
-     <option value="checked">최근 확인 순</option>
-     <option value="name">이름 순</option>
-    </select>
+    <select id="sort" aria-label="정렬"><option value="price">가격 낮은 순</option><option value="checked">최근 확인 순</option><option value="name">이름 순</option></select>
    </div>
    <div class="toggles">
     <label><input type="checkbox" id="f-tour"> 관광객 처방 확인된 곳만</label>
@@ -134,48 +171,130 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
   <div id="list"></div>
  </section>
 
+ <section id="p-travel" class="hide">
+  <div class="ctl">
+   <div class="line" id="fromChips"><span class="lab">출발</span></div>
+   <div class="line" id="modeChips"><span class="lab">수단</span></div>
+  </div>
+  <p class="count" id="tcount"></p>
+  <div id="tlist"></div>
+ </section>
+
  <section id="p-log" class="hide">
+  <h2>최근 바뀐 것</h2>
   <ul class="log" id="log"></ul>
  </section>
 
  <div class="note">
-  <p>정보 제공용 목록입니다. 처방 여부와 용량은 진찰한 의사가 정하며, 가격·예약 상황은 수시로 바뀌니 방문 전 반드시 병원에 직접 확인하세요. 마운자로는 전문의약품이라 주사 방법·부작용 상담은 의사와 하세요.</p>
-  <p>가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이며, 기준이 다른 경우 각 병원의 '가격 메모'에 적혀 있습니다. 증명서·배송비는 별도인 곳이 많습니다.</p>
-  <p>매일 아침 공개 자료(병원 공식 페이지, 가격 집계 사이트, 한국어 가이드)를 다시 확인해 자동으로 갱신됩니다.</p>
+  <p>정보 제공용 페이지예요. 마운자로는 전문의약품이라 처방 여부와 용량은 진찰한 의사가 정하고, 주사 방법·부작용 상담도 의사와 하세요. 가격·예약 상황·운임은 수시로 바뀌니 예약 전 병원과 항공사·선사에서 직접 확인하세요.</p>
+  <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편은 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이에요.</p>
+  <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요.</p>
  </div>
 </main>
 
 <script>
 {
 const DOSES=['2.5','5','7.5','10','12.5','15'];
-const st={dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,tab:'list'};
-try{const s=JSON.parse(localStorage.getItem('mj-ui')||'{}');Object.assign(st,s,{q:''})}catch(e){}
-const save=()=>{try{const {q,...r}=st;localStorage.setItem('mj-ui',JSON.stringify(r))}catch(e){}};
-let data=null;
+const st={dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체'};
+try{Object.assign(st,JSON.parse(localStorage.getItem('jt-ui')||'{}'),{q:''})}catch(e){}
+const save=()=>{try{const {q,...r}=st;localStorage.setItem('jt-ui',JSON.stringify(r))}catch(e){}};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const yen=n=>Number(n).toLocaleString('ko-KR');
+const fmt=n=>Number(n).toLocaleString('ko-KR');
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:null;
+const man=w=>w>=10000?(Math.round(w/1000)/10).toLocaleString('ko-KR')+'만':fmt(Math.round(w/100)*100);
+let C=null,T=null,FX=null;
 
-function norm(d){
+/* ---------- 데이터 정리 ---------- */
+const val=v=>v&&typeof v==='object'?(v.value??v.number??v.date??v.label??null):v;
+const toNum=v=>{v=val(v);const n=typeof v==='number'?v:parseFloat(String(v??'').replace(/[^\d.]/g,''));return isFinite(n)&&n>0?n:null};
+function normC(d){
   if(!d||!Array.isArray(d.header)||!Array.isArray(d.rows))return null;
-  const H=d.header.map(h=>String(h).trim());
-  const ix=k=>H.indexOf(k);
-  const clinics=d.rows.filter(r=>Array.isArray(r)&&r[ix('병원명')]).map((r,i)=>{
-    const g=k=>{const j=ix(k);return j<0?null:r[j]};
-    const num=k=>{const v=g(k);const n=typeof v==='number'?v:parseFloat(String(v??'').replace(/[^\d.]/g,''));return isFinite(n)&&n>0?n:null};
-    const p={};for(const m of ['1','3'])for(const x of DOSES)p[m+'_'+x]=num(m+'개월 '+x+'mg');
+  const H=d.header.map(h=>String(h).trim()),ix=k=>H.indexOf(k);
+  const clinics=d.rows.filter(r=>Array.isArray(r)&&val(r[ix('병원명')])).map((r,i)=>{
+    const g=k=>{const j=ix(k);return j<0?null:val(r[j])};
+    const p={};for(const m of ['1','3'])for(const x of DOSES)p[m+'_'+x]=toNum(g(m+'개월 '+x+'mg'));
     return {id:i,name:g('병원명'),city:g('도시')||'기타',p,memo:g('가격 메모'),ko:g('한국어 지원'),tour:g('관광객 처방'),contact:g('연락 채널'),ship:g('온라인·호텔 배송'),status:g('예약 상황'),addr:g('주소'),url:g('공식 URL'),src:g('출처'),checked:g('최종 확인일'),note:g('비고')};
   });
   return {updatedAt:d.updatedAt,clinics,log:Array.isArray(d.log)?d.log:[]};
 }
+function normT(d){
+  if(!d||!Array.isArray(d.rows))return {updatedAt:d&&d.updatedAt,rows:[]};
+  const H=(d.header||['조회일','노선','수단','최저가(원)','출발일','항공사/선사','출처','비고']).map(h=>String(h).trim());
+  const ix=k=>H.findIndex(h=>h.startsWith(k));
+  const rows=d.rows.filter(Array.isArray).map(r=>{
+    const g=k=>{const j=ix(k);return j<0?null:val(r[j])};
+    const route=String(g('노선')||'').replace(/\s/g,'');
+    const [from,to]=route.split(/→|->|>/);
+    return {day:String(g('조회일')||''),route,from:from||'',to:to||'',mode:String(g('수단')||''),price:toNum(g('최저가')),dep:g('출발일'),carrier:g('항공사'),src:g('출처'),note:g('비고')};
+  }).filter(r=>r.route&&r.day);
+  return {updatedAt:d.updatedAt,rows};
+}
+const fromGroup=f=>/부산/.test(f)?'부산':/인천|김포|서울/.test(f)?'인천·김포':f||'기타';
+// 병원 도시 ↔ 도착지 매칭
+const cityOfDest=to=>/후쿠오카|하카타/.test(to)?'후쿠오카':/오사카|간사이/.test(to)?'오사카':/도쿄|나리타|하네다/.test(to)?'도쿄':/시모노세키/.test(to)?'시모노세키':/대마도|쓰시마|히타카쓰|이즈하라/.test(to)?'대마도':/나고야|주부/.test(to)?'나고야':/삿포로|신치토세/.test(to)?'삿포로':to;
+const nearCity={'시모노세키':'후쿠오카'};
 
-function chips(box,items,key,cls){
+/* 노선·수단별 최신값 + 기록 */
+function travelBoard(){
+  if(!T||!T.rows.length)return [];
+  const g={};
+  for(const r of T.rows){const k=r.route+'|'+r.mode;(g[k]=g[k]||[]).push(r)}
+  return Object.values(g).map(list=>{
+    list.sort((a,b)=>a.day.localeCompare(b.day));
+    const withP=list.filter(r=>r.price);
+    const last=list[list.length-1];
+    const lastP=withP[withP.length-1]||null;
+    const prev=withP.length>1?withP[withP.length-2]:null;
+    return {key:last.route+'|'+last.mode,route:last.route,from:last.from,to:last.to,city:cityOfDest(last.to),mode:last.mode,cur:lastP,latest:last,prev,hist:withP.slice(-14)};
+  });
+}
+function cheapestTo(city){
+  const b=travelBoard().filter(x=>x.cur&&(x.city===city||nearCity[x.city]===city));
+  b.sort((a,c)=>a.cur.price-c.cur.price);return b[0]||null;
+}
+const yen2won=y=>FX?y*FX/100:null;
+
+/* ---------- 공통 칩 ---------- */
+function chips(box,items,key,cls,after){
   const el=$(box);el.querySelectorAll('.chip').forEach(c=>c.remove());
   el.insertAdjacentHTML('beforeend',items.map(([v,l])=>`<button class="chip ${cls||''}" data-v="${esc(v)}" aria-pressed="${st[key]===v}">${esc(l)}</button>`).join(''));
-  el.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;st[key]=b.dataset.v;save();chips(box,items,key,cls);render()};
+  el.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;st[key]=b.dataset.v;save();chips(box,items,key,cls,after);(after||renderAll)()};
+}
+const key=()=>st.period+'_'+st.dose;
+const keyLabel=()=>`${st.dose}mg ${st.period==='1'?'1개월(4펜)':'3개월(12펜)'}`;
+
+/* ---------- 한눈에 ---------- */
+function renderHome(){
+  if(!C)return;
+  const k=key();
+  const byCity={};
+  for(const c of C.clinics){if(!c.p[k])continue;(byCity[c.city]=byCity[c.city]||[]).push(c)}
+  let cards=Object.entries(byCity).map(([city,list])=>{
+    list.sort((a,b)=>a.p[k]-b.p[k]);const best=list[0];
+    const online=/온라인|전국/.test(city);
+    const tr=online?null:cheapestTo(city);
+    const won=yen2won(best.p[k]);
+    const total=won!=null&&tr?won+tr.cur.price:null;
+    return {city,list,best,tr,won,total,online};
+  });
+  const grp=x=>x.online?2:x.total!=null?0:1;
+  cards.sort((a,b)=>(grp(a)-grp(b))||((a.total??a.won??a.best.p[k])-(b.total??b.won??b.best.p[k])));
+  const firstTotal=cards.findIndex(x=>x.total!=null);
+  $('cities').innerHTML=cards.length?cards.map((x,i)=>`
+   ${i>0&&grp(x)!==grp(cards[i-1])?`<p class="hint" style="margin-top:18px">${grp(x)===1?'아래 도시는 아직 교통편 운임이 없어 병원 가격만 비교했어요.':'온라인 진료 후 호텔·숙소로 받는 곳'}</p>`:''}
+   <a class="city ${i===firstTotal||(firstTotal<0&&i===0)?'best1':''}" href="#clinics" data-city="${esc(x.city)}">
+    <div><div class="cn">${esc(x.city)}</div><div class="meta">${x.list.length}곳에서 ${keyLabel()} 처방가 확인</div></div>
+    <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>병원+편도 교통</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
+    <div class="parts">
+     <div class="part"><span class="m">병원 최저</span><b>${esc(x.best.name)}</b><span class="num">¥${fmt(x.best.p[k])}</span>${x.won?` <span class="m">≈₩${man(x.won)}</span>`:''}</div>
+     <div class="part"><span class="m">${x.online?'받는 방법':'가는 길 최저(편도)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>${esc(x.tr.route)} · ${esc(x.tr.mode)}</b><span class="num">₩${fmt(x.tr.cur.price)}</span> <span class="m">${esc(x.tr.cur.dep||'')} 출발</span>`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
+    </div>
+   </a>`).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 아직 없어요. 다른 용량을 골라 보세요.</div>`;
+  $('cities').onclick=e=>{const a=e.target.closest('.city');if(!a)return;st.city=a.dataset.city;save();buildCityChips()};
 }
 
+/* ---------- 병원 ---------- */
 function tagFor(c){
   const t=[];
   if(c.ko)t.push(`<span class="tag ${/의사|직원/.test(c.ko)?'ok':''}">${esc(c.ko)}</span>`);
@@ -184,88 +303,134 @@ function tagFor(c){
   if(/카카오/.test(c.contact||''))t.push('<span class="tag">카카오톡</span>');
   return t.join('');
 }
-
 function priceTable(c){
-  const rows=DOSES.map(x=>{
-    const a=c.p['1_'+x],b=c.p['3_'+x];
-    const hl=m=>st.dose===x&&st.period===m?' class="hl"':'';
-    return `<tr><td>${x}mg</td><td${hl('1')}>${a?'¥'+yen(a):'–'}</td><td${hl('3')}>${b?'¥'+yen(b):'–'}</td></tr>`;
-  }).join('');
-  return `<table><thead><tr><th>용량</th><th>1개월(4펜)</th><th>3개월(12펜)</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table><thead><tr><th>용량</th><th>1개월(4펜)</th><th>3개월(12펜)</th></tr></thead><tbody>${DOSES.map(x=>{
+    const a=c.p['1_'+x],b=c.p['3_'+x],hl=m=>st.dose===x&&st.period===m?' class="hl"':'';
+    return `<tr><td>${x}mg</td><td${hl('1')}>${a?'¥'+fmt(a):'–'}</td><td${hl('3')}>${b?'¥'+fmt(b):'–'}</td></tr>`}).join('')}</tbody></table>`;
 }
-
-function render(){
-  if(!data)return;
-  const key=st.period+'_'+st.dose;
-  const q=st.q.trim().toLowerCase();
-  let L=data.clinics.filter(c=>
-    (st.city==='전체'||c.city===st.city)&&
-    (!st.tour||c.tour==='확인')&&
-    (!st.ko||/의사|직원/.test(c.ko||''))&&
-    (!st.hasPrice||c.p[key])&&
-    (!q||[c.name,c.city,c.addr,c.memo,c.note,c.contact].join(' ').toLowerCase().includes(q)));
-  const by={price:(a,b)=>(a.p[key]??1e12)-(b.p[key]??1e12),checked:(a,b)=>String(b.checked||'').localeCompare(String(a.checked||'')),name:(a,b)=>String(a.name).localeCompare(String(b.name),'ko')}[st.sort];
+function buildCityChips(){
+  if(!C)return;
+  const cnt={};C.clinics.forEach(c=>cnt[c.city]=(cnt[c.city]||0)+1);
+  const cities=['전체',...Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])];
+  if(!cities.includes(st.city))st.city='전체';
+  chips('cityChips',cities.map(c=>[c,c==='전체'?'전체':`${c} ${cnt[c]}`]),'city');
+}
+function renderClinics(){
+  if(!C)return;
+  const k=key(),q=st.q.trim().toLowerCase();
+  let L=C.clinics.filter(c=>(st.city==='전체'||c.city===st.city)&&(!st.tour||c.tour==='확인')&&(!st.ko||/의사|직원/.test(c.ko||''))&&(!st.hasPrice||c.p[k])&&(!q||[c.name,c.city,c.addr,c.memo,c.note,c.contact].join(' ').toLowerCase().includes(q)));
+  const by={price:(a,b)=>(a.p[k]??1e12)-(b.p[k]??1e12),checked:(a,b)=>String(b.checked||'').localeCompare(String(a.checked||'')),name:(a,b)=>String(a.name).localeCompare(String(b.name),'ko')}[st.sort];
   L.sort(by);
-  $('count').textContent=`${L.length}곳 · ${st.dose}mg ${st.period==='1'?'1개월(4펜)':'3개월(12펜)'} 기준`;
+  $('count').textContent=`${L.length}곳 · ${keyLabel()} 기준`;
   const open=new Set([...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.n));
   $('list').innerHTML=L.length?L.map((c,i)=>{
-    const v=c.p[key];const per=v&&st.period==='3'?`월 약 ¥${yen(Math.round(v/3))}`:'';
-    const url=safeUrl(c.url);
+    const v=c.p[k],w=v?yen2won(v):null,url=safeUrl(c.url);
+    const tr=/온라인|전국/.test(c.city)?null:cheapestTo(c.city);
+    const sub=[w?`≈₩${man(w)}`:'',v&&st.period==='3'?`월 ¥${fmt(Math.round(v/3))}`:'',c.memo&&/\+α|미확인/.test(c.memo)?'+α 별도':''].filter(Boolean).join(' · ');
     return `<details class="row" data-n="${esc(c.name)}" ${open.has(String(c.name))?'open':''}><summary>
-      <div>${v?`<div class="price num ${st.sort==='price'&&i<3?'rank':''}"><small>¥</small>${yen(v)}</div><div class="per">${per||(c.memo&&/\+α|미확인/.test(c.memo)?'+α 별도 가능':'총액')}</div>`:`<div class="price na">${st.dose}mg 가격 미확인</div>`}</div>
-      <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)}${c.checked?` · ${esc(c.checked)} 확인`:''}</div>
-      <div class="tags">${tagFor(c)}</div>${c.status&&c.status!=='확인 필요'?`<div class="status">${esc(c.status)}</div>`:''}</div>
-      <div class="arw" aria-hidden="true">›</div></summary>
-      <div class="det">${priceTable(c)}
-      <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([k,x])=>`<dt>${k}</dt><dd>${esc(x)}</dd>`).join('')}</dl>
-      ${url?`<div><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 열기 ↗</a></div>`:''}</div></details>`;
+     <div>${v?`<div class="price num ${st.sort==='price'&&i<3?'rank':''}"><small>¥</small>${fmt(v)}</div><div class="per">${sub||'총액'}</div>`:`<div class="price na">${st.dose}mg 가격 미확인</div>`}</div>
+     <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)}${c.checked?` · ${esc(c.checked)} 확인`:''}</div><div class="tags">${tagFor(c)}</div>${c.status&&c.status!=='확인 필요'?`<div class="status">${esc(c.status)}</div>`:''}</div>
+     <div class="arw" aria-hidden="true">›</div></summary>
+     <div class="det">${priceTable(c)}
+      ${tr?`<div class="go">✈ 가는 길 최저: <b>${esc(tr.route)} ${esc(tr.mode)}</b> 편도 <b class="num">₩${fmt(tr.cur.price)}</b> (${esc(tr.cur.dep||'')} 출발${tr.cur.carrier?', '+esc(tr.cur.carrier):''}) <a href="#travel">전체 보기</a></div>`:''}
+      <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
+      <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
+     </div></details>`;
   }).join(''):'<p class="empty">조건에 맞는 병원이 없어요. 필터를 줄여 보세요.</p>';
-  $('log').innerHTML=[...data.log].reverse().map(r=>`<li><span class="d num">${esc(r[0])}</span><div><span class="k">${esc(r[2])}</span><b>${esc(r[1])}</b><div>${esc(r[3])}</div></div>${r[4]?`<span class="s">${esc(r[4])}</span>`:''}</li>`).join('')||'<li>기록 없음</li>';
 }
 
-function setData(d,live){
-  const n=norm(d);if(!n)return false;
-  data=n;
-  $('cnt').textContent=n.clinics.length;
-  $('upd').textContent=`${n.updatedAt||'–'} 업데이트${live?'':' (오프라인 저장본)'}`;
-  $('live').classList.toggle('on',!!live);
-  const cities=['전체',...[...new Set(n.clinics.map(c=>c.city))].sort((a,b)=>n.clinics.filter(c=>c.city===b).length-n.clinics.filter(c=>c.city===a).length)];
-  if(!cities.includes(st.city))st.city='전체';
-  chips('cities',cities.map(c=>[c,c]),'city');
-  render();return true;
+/* ---------- 가는 길 ---------- */
+function spark(h){
+  if(h.length<2)return '';
+  const W=220,H=34,ps=h.map(r=>r.price),mn=Math.min(...ps),mx=Math.max(...ps),rg=mx-mn||1;
+  const pts=ps.map((p,i)=>`${(i/(ps.length-1)*(W-6)+3).toFixed(1)},${(H-4-(p-mn)/rg*(H-8)).toFixed(1)}`).join(' ');
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="최근 ${ps.length}회 최저가 추이"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
 }
+function renderTravel(){
+  const B=travelBoard();
+  const froms=['전체',...new Set(B.map(b=>fromGroup(b.from)))];
+  if(!froms.includes(st.from))st.from='전체';
+  chips('fromChips',froms.map(f=>[f,f]),'from','',renderTravel);
+  chips('modeChips',[['전체','전체'],['항공','항공'],['배','배']],'mode','',renderTravel);
+  let L=B.filter(b=>(st.from==='전체'||fromGroup(b.from)===st.from)&&(st.mode==='전체'||b.mode===st.mode));
+  L.sort((a,b)=>(a.cur?a.cur.price:1e12)-(b.cur?b.cur.price:1e12));
+  $('tcount').textContent=B.length?`${L.length}개 노선 · 성인 1인 편도 최저가${T.updatedAt?' · '+T.updatedAt+' 조회':''}`:'';
+  if(!B.length){$('tlist').innerHTML='<div class="empty">항공·배편 운임은 매일 낮 12시 40분쯤 조회해서 올라와요.<br>첫 결과가 나오면 여기에 노선별 최저가가 표시돼요.</div>';return}
+  const cnt={};if(C)C.clinics.forEach(c=>cnt[c.city]=(cnt[c.city]||0)+1);
+  $('tlist').innerHTML=L.map((b,i)=>{
+    const c=b.cur,d=c&&b.prev?c.price-b.prev.price:0,url=c&&safeUrl(c.src);
+    const near=cnt[b.city]?`${b.city} 병원 ${cnt[b.city]}곳`:nearCity[b.city]&&cnt[nearCity[b.city]]?`${nearCity[b.city]}까지 가까움 · 병원 ${cnt[nearCity[b.city]]}곳`:b.city==='대마도'?'일부 후쿠오카 병원이 대마도 숙소로 배송':'';
+    return `<div class="tr">
+     <div>${c?`<div class="price num ${i===0?'rank':''}"><small>₩</small>${fmt(c.price)}</div><div class="per">${esc(c.dep||'')} 출발</div>${d?`<div class="chg ${d<0?'dn':'up'}">${d<0?'▼':'▲'} ₩${fmt(Math.abs(d))} (지난 조회 대비)</div>`:''}`:`<div class="price na">확인 못 함</div>`}</div>
+     <div><div class="nm"><span class="mode ${b.mode==='배'?'ship':''}">${esc(b.mode)}</span>${esc(b.route)}</div>
+      <div class="meta">${c&&c.carrier?esc(c.carrier)+' · ':''}${esc(b.latest.day)} 조회</div>
+      ${b.latest.note?`<div class="status">${esc(b.latest.note)}</div>`:''}
+      ${near?`<div class="tags"><a class="tag" href="#clinics" data-city="${esc(cnt[b.city]?b.city:nearCity[b.city]||'')}">${esc(near)} →</a></div>`:''}
+      ${spark(b.hist)}
+      ${url?`<div class="btns" style="margin-top:8px"><a class="btn o" href="${esc(url)}" target="_blank" rel="noopener">예약·조회 페이지 ↗</a></div>`:''}
+     </div></div>`;
+  }).join('')||'<p class="empty">조건에 맞는 노선이 없어요.</p>';
+  $('tlist').onclick=e=>{const a=e.target.closest('[data-city]');if(a&&a.dataset.city){st.city=a.dataset.city;save();buildCityChips()}};
+}
+
+/* ---------- 변동 ---------- */
+function renderLog(){
+  const items=[];
+  if(C)for(const r of C.log)items.push({d:String(val(r[0])||''),k:val(r[2]),n:val(r[1]),t:val(r[3]),s:val(r[4])});
+  const B=travelBoard();
+  for(const b of B)if(b.cur&&b.prev&&b.cur.price!==b.prev.price)items.push({d:b.cur.day,k:'운임 변동',n:`${b.route} ${b.mode}`,t:`₩${fmt(b.prev.price)} → ₩${fmt(b.cur.price)}`,s:b.cur.carrier});
+  items.sort((a,b)=>b.d.localeCompare(a.d));
+  $('log').innerHTML=items.slice(0,150).map(r=>`<li><span class="num">${esc(r.d)}</span><div><span class="k">${esc(r.k)}</span><b>${esc(r.n)}</b><div>${esc(r.t)}</div></div>${r.s?`<span class="s">${esc(r.s)}</span>`:''}</li>`).join('')||'<li>기록 없음</li>';
+}
+
+/* ---------- 라우팅 ---------- */
+const TABS=['home','clinics','travel','log'];
+function route(){
+  const t=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'home';
+  TABS.forEach(x=>{$('p-'+x).classList.toggle('hide',x!==t);document.querySelector(`nav a[data-t=${x}]`).toggleAttribute('aria-current',x===t);if(x===t)document.querySelector(`nav a[data-t=${x}]`).setAttribute('aria-current','page')});
+  $('doseCtl').classList.toggle('hide',!(t==='home'||t==='clinics'));
+  renderAll();scrollTo(0,0);
+}
+function renderAll(){
+  const t=location.hash.slice(1)||'home';
+  if(t==='clinics')renderClinics();else if(t==='travel')renderTravel();else if(t==='log')renderLog();else renderHome();
+}
+addEventListener('hashchange',route);
 
 chips('doses',DOSES.map(x=>[x,x+'mg']),'dose','dose');
 chips('periods',[['1','1개월'],['3','3개월']],'period');
-$('q').oninput=e=>{st.q=e.target.value;render()};
-$('sort').value=st.sort;$('sort').onchange=e=>{st.sort=e.target.value;save();render()};
-for(const [id,k] of [['f-tour','tour'],['f-ko','ko'],['f-price','hasPrice']]){$(id).checked=st[k];$(id).onchange=e=>{st[k]=e.target.checked;save();render()}}
-function tab(t){st.tab=t;$('t-list').setAttribute('aria-selected',t==='list');$('t-log').setAttribute('aria-selected',t==='log');$('p-list').classList.toggle('hide',t!=='list');$('p-log').classList.toggle('hide',t!=='log');save()}
-$('t-list').onclick=()=>tab('list');$('t-log').onclick=()=>tab('log');tab(st.tab||'list');
+$('q').oninput=e=>{st.q=e.target.value;renderClinics()};
+$('sort').value=st.sort;$('sort').onchange=e=>{st.sort=e.target.value;save();renderClinics()};
+for(const [id,k] of [['f-tour','tour'],['f-ko','ko'],['f-price','hasPrice']]){$(id).checked=st[k];$(id).onchange=e=>{st[k]=e.target.checked;save();renderClinics()}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='복사됨'}catch(_){b.textContent='복사 안 됨'}setTimeout(()=>b.textContent='복사',1500)});
 
+/* ---------- 불러오기 ---------- */
+async function load(name){
+  try{const r=await fetch(name+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;return [await r.json(),true]}
+  catch(e){try{const c=await caches.match(name);if(c)return [await c.json(),false]}catch(_){}return [null,false]}
+}
 (async()=>{
-  try{
-    const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw 0;
-    setData(await r.json(),true);
-  }catch(e){
-    try{const c=await caches.match('data.json');if(c){setData(await c.json(),false);return}}catch(_){}
-    $('upd').textContent='자료를 불러오지 못했어요. 잠시 후 다시 열어 주세요.';
-  }
+  const [[c,l1],[t]]=await Promise.all([load('clinics.json'),load('travel.json')]);
+  C=normC(c);T=normT(t);
+  const fx=t&&t.fx&&toNum(t.fx.jpy100krw);FX=fx||null;
+  const parts=[];if(C)parts.push(`병원 ${C.updatedAt||''} 갱신`);if(T&&T.updatedAt)parts.push(`항공·배 ${T.updatedAt} 갱신`);
+  $('upd').textContent=(parts.join(' · ')||'자료를 불러오지 못했어요')+(l1?'':' (오프라인 저장본)');
+  $('fxl').textContent=FX?`환율 100엔 ≈ ₩${fmt(Math.round(FX))}${t.fx.date?' ('+t.fx.date+')':''}`:'';
+  buildCityChips();route();
 })();
 
+/* ---------- 홈 화면 추가 ---------- */
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 {
   const box=$('inst'),btn=$('inst-b'),txt=$('inst-t');let dp=null;
   const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-  let dismissed=false;try{dismissed=localStorage.getItem('mj-inst')==='x'}catch(e){}
-  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  let dismissed=false;try{dismissed=localStorage.getItem('jt-inst')==='x'}catch(e){}
   if(!standalone&&!dismissed){
-    if(ios){txt.textContent='아이폰: 아래 공유 버튼 → "홈 화면에 추가"를 누르면 앱처럼 쓸 수 있어요.';box.classList.remove('hide')}
+    if(/iphone|ipad|ipod/i.test(navigator.userAgent)){txt.textContent='아이폰: 아래 공유 버튼 → "홈 화면에 추가"를 누르면 앱처럼 쓸 수 있어요.';box.classList.remove('hide')}
     addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;btn.classList.remove('hide');box.classList.remove('hide')});
   }
   btn.onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(e){}dp=null;box.classList.add('hide')};
-  $('inst-x').onclick=()=>{box.classList.add('hide');try{localStorage.setItem('mj-inst','x')}catch(e){}};
+  $('inst-x').onclick=()=>{box.classList.add('hide');try{localStorage.setItem('jt-inst','x')}catch(e){}};
 }
 }
 </script>

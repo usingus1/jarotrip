@@ -1,5 +1,5 @@
-// 화면 파일은 캐시 우선, data.json은 네트워크 우선(오프라인이면 마지막 저장본)
-const CACHE = 'mj-v1';
+// 화면 파일은 캐시 우선, clinics.json·travel.json은 네트워크 우선(오프라인이면 마지막 저장본)
+const CACHE = 'jt-v2';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -13,13 +13,14 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
-  if (url.pathname.endsWith('/data.json')) {
+  if (url.pathname.endsWith('.json')) {
+    const name = url.pathname.split('/').pop();
     e.respondWith(
       fetch(e.request).then(r => {
         const copy = r.clone();
-        caches.open(CACHE).then(c => c.put('data.json', copy));
+        caches.open(CACHE).then(c => c.put(name, copy));
         return r;
-      }).catch(() => caches.match('data.json'))
+      }).catch(() => caches.match(name))
     );
     return;
   }
