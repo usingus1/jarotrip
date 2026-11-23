@@ -288,7 +288,7 @@ function renderHome(){
     <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>병원+편도 교통</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
     <div class="parts">
      <div class="part"><span class="m">병원 최저</span><b>${esc(x.best.name)}</b><span class="num">¥${fmt(x.best.p[k])}</span>${x.won?` <span class="m">≈₩${man(x.won)}</span>`:''}</div>
-     <div class="part"><span class="m">${x.online?'받는 방법':'가는 길 최저(편도)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>${esc(x.tr.route)} · ${esc(x.tr.mode)}</b><span class="num">₩${fmt(x.tr.cur.price)}</span> <span class="m">${esc(x.tr.cur.dep||'')} 출발</span>`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
+     <div class="part"><span class="m">${x.online?'받는 방법':'가는 길 최저(편도)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>${esc(x.tr.route)} · ${esc(x.tr.mode)}</b><span class="num">₩${fmt(x.tr.cur.price)}</span> <span class="m">${x.tr.cur.dep?esc(x.tr.cur.dep)+' 출발':''}</span>`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
     </div>
    </a>`).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 아직 없어요. 다른 용량을 골라 보세요.</div>`;
   $('cities').onclick=e=>{const a=e.target.closest('.city');if(!a)return;st.city=a.dataset.city;save();buildCityChips()};
@@ -332,7 +332,7 @@ function renderClinics(){
      <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)}${c.checked?` · ${esc(c.checked)} 확인`:''}</div><div class="tags">${tagFor(c)}</div>${c.status&&c.status!=='확인 필요'?`<div class="status">${esc(c.status)}</div>`:''}</div>
      <div class="arw" aria-hidden="true">›</div></summary>
      <div class="det">${priceTable(c)}
-      ${tr?`<div class="go">✈ 가는 길 최저: <b>${esc(tr.route)} ${esc(tr.mode)}</b> 편도 <b class="num">₩${fmt(tr.cur.price)}</b> (${esc(tr.cur.dep||'')} 출발${tr.cur.carrier?', '+esc(tr.cur.carrier):''}) <a href="#travel">전체 보기</a></div>`:''}
+      ${tr?`<div class="go">✈ 가는 길 최저: <b>${esc(tr.route)} ${esc(tr.mode)}</b> 편도 <b class="num">₩${fmt(tr.cur.price)}</b> (${tr.cur.dep?esc(tr.cur.dep)+' 출발':''}${tr.cur.dep&&tr.cur.carrier?', ':''}${tr.cur.carrier?esc(tr.cur.carrier):''}) <a href="#travel">전체 보기</a></div>`:''}
       <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
       <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
      </div></details>`;
@@ -361,7 +361,7 @@ function renderTravel(){
     const c=b.cur,d=c&&b.prev?c.price-b.prev.price:0,url=c&&safeUrl(c.src);
     const near=cnt[b.city]?`${b.city} 병원 ${cnt[b.city]}곳`:nearCity[b.city]&&cnt[nearCity[b.city]]?`${nearCity[b.city]}까지 가까움 · 병원 ${cnt[nearCity[b.city]]}곳`:b.city==='대마도'?'일부 후쿠오카 병원이 대마도 숙소로 배송':'';
     return `<div class="tr">
-     <div>${c?`<div class="price num ${i===0?'rank':''}"><small>₩</small>${fmt(c.price)}</div><div class="per">${esc(c.dep||'')} 출발</div>${d?`<div class="chg ${d<0?'dn':'up'}">${d<0?'▼':'▲'} ₩${fmt(Math.abs(d))} (지난 조회 대비)</div>`:''}`:`<div class="price na">확인 못 함</div>`}</div>
+     <div>${c?`<div class="price num ${i===0?'rank':''}"><small>₩</small>${fmt(c.price)}</div><div class="per">${c.dep?esc(c.dep)+' 출발':'날짜별 요금 미표시'}</div>${d?`<div class="chg ${d<0?'dn':'up'}">${d<0?'▼':'▲'} ₩${fmt(Math.abs(d))} (지난 조회 대비)</div>`:''}`:`<div class="price na">확인 못 함</div>`}</div>
      <div><div class="nm"><span class="mode ${b.mode==='배'?'ship':''}">${esc(b.mode)}</span>${esc(b.route)}</div>
       <div class="meta">${c&&c.carrier?esc(c.carrier)+' · ':''}${esc(b.latest.day)} 조회</div>
       ${b.latest.note?`<div class="status">${esc(b.latest.note)}</div>`:''}
