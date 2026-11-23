@@ -1,0 +1,47 @@
+# 매주 월요일 09:00(KST) GoatCounter 통계를 받아 stats 브랜치에 저장한다.
+# 필요: 저장소 Settings → Secrets and variables → Actions 에 GOATCOUNTER_TOKEN (읽기 권한 API 키)
+name: weekly-stats
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 통계 받기
+        env:
+          TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+        run: |
+          set -e
+          mkdir out && cd out
+          API=https://jarotrip.goatcounter.com/api/v0
+          get(){ curl -sS --fail-with-body -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" "$API/$1"; sleep 1; }
+          today=$(TZ=Asia/Seoul date +%F)
+          for w in this prev; do
+            if [ $w = this ]; then s=$(TZ=Asia/Seoul date -d "$today -7 day" +%F); e=$(TZ=Asia/Seoul date -d "$today -1 day" +%F)
+            else s=$(TZ=Asia/Seoul date -d "$today -14 day" +%F); e=$(TZ=Asia/Seoul date -d "$today -8 day" +%F); fi
+            q="start=${s}T00:00:00%2B09:00&end=${e}T23:59:59%2B09:00"
+            echo "{\"start\":\"$s\",\"end\":\"$e\"}" > $w-range.json
+            get "stats/total?$q" > $w-total.json
+            get "stats/hits?$q&limit=200" > $w-hits.json
+            for p in toprefs browsers systems sizes locations; do get "stats/$p?$q&limit=30" > $w-$p.json || echo '{}' > $w-$p.json; done
+          done
+          python3 - <<'PY'
+          import json,glob,os
+          d={"fetchedAt":os.popen("TZ=Asia/Seoul date -Iseconds").read().strip()}
+          for f in sorted(glob.glob("*.json")):
+              try: d[f[:-5]]=json.load(open(f))
+              except Exception as ex: d[f[:-5]]={"error":str(ex)}
+          json.dump(d,open("../latest.json","w"),ensure_ascii=False)
+          PY
+      - name: stats 브랜치에 저장
+        run: |
+          git config --global user.name "jarotrip-stats"
+          git config --global user.email "actions@users.noreply.github.com"
+          git clone --depth 1 --branch stats "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" s 2>/dev/null || { mkdir s && cd s && git init -q -b stats && git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" && cd ..; }
+          cd s && day=$(TZ=Asia/Seoul date +%F)
+          cp ../latest.json latest.json && cp ../latest.json "week-$day.json"
+          git add -A && git commit -qm "stats: $day" && git push -q origin stats
