@@ -1,5 +1,5 @@
 // 화면 파일은 캐시 우선, clinics.json·travel.json은 네트워크 우선(오프라인이면 마지막 저장본)
-const CACHE = 'jt-v5';
+const CACHE = 'jt-v6';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -25,6 +25,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (e.request.mode === 'navigate') {
+    if (url.pathname.includes('/city/')) return; // 도시별 페이지는 그대로 네트워크에서
     e.respondWith(fetch(e.request).then(r => {
       const copy = r.clone();
       caches.open(CACHE).then(c => c.put('index.html', copy));

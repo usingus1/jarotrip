@@ -4,15 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111111">
-<meta name="description" content="자로트립 — 일본 마운자로 한국어 병원 가격과 한국→일본 항공·배편 최저가를 한 곳에서. 매일 자동 갱신.">
-<meta name="robots" content="noindex">
+<meta name="description" content="일본 마운자로(스시자로) 한국어 상담 병원 40여 곳의 용량별 가격을 원화로 비교하고, 한국↔일본 항공권·배편 최저가와 병원 근처 숙소까지 한 번에. 도쿄·오사카·후쿠오카 등 도시별 정리, 매일 자동 갱신.">
+<link rel="canonical" href="https://usingus1.github.io/jarotrip/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="자로트립">
+<meta property="og:title" content="자로트립 · 일본 마운자로 병원 가격 + 항공권 한 번에">
+<meta property="og:description" content="한국어 상담 일본 병원 가격(원화 환산)과 항공·배편 최저가, 숙소까지. 매일 자동 갱신.">
+<meta property="og:url" content="https://usingus1.github.io/jarotrip/"><meta property="og:image" content="https://usingus1.github.io/jarotrip/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"자로트립","alternateName":"JaroTrip","url":"https://usingus1.github.io/jarotrip/","inLanguage":"ko","description":"일본 마운자로 한국어 상담 병원 가격과 한국↔일본 항공·배편 최저가 비교"}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="자로트립">
-<title>자로트립 · 일본 마운자로 병원·항공·배편</title>
+<title>자로트립 · 일본 마운자로 병원 가격 비교 + 항공권·숙소 (스시자로)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -436,6 +442,7 @@ td .kw{display:block;font-size:11px;margin:0}
   <p>정보 제공용 페이지예요. 마운자로는 전문의약품이라 처방 여부와 용량은 진찰한 의사가 정하고, 주사 방법·부작용 상담도 의사와 하세요. 가격·예약 상황·운임은 수시로 바뀌니 예약 전 병원과 항공사·선사에서 직접 확인하세요.</p>
   <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편 "매일 조회하는 최저가"는 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이고, 가는 편과 오는 편을 따로 조회해요. 날짜를 정해 찾으면 네이버 항공권·스카이스캐너·구글 항공편이, 병원 근처 숙소 찾기는 구글 지도·부킹닷컴·아고다가 그 날짜로 열려 실시간 요금을 확인할 수 있어요.</p>
   <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요. 일부 숙소·항공 링크는 제휴 링크일 수 있어요.</p>
+  <p class="foot"><b>도시별 정리</b><a href="city/tokyo.html">도쿄</a><a href="city/osaka.html">오사카</a><a href="city/fukuoka.html">후쿠오카</a><a href="city/nagoya.html">나고야</a><a href="city/sapporo.html">삿포로</a><a href="city/hiroshima.html">히로시마</a><a href="city/kyoto.html">교토</a><a href="city/kagoshima.html">가고시마</a></p>
   <p class="foot"><a href="#about">자로트립 소개</a><a href="#about" data-jump="affiliate">제휴 링크 고지</a><a href="#about" data-jump="privacy">개인정보 처리방침</a></p>
  </div>
 </main>
@@ -445,6 +452,7 @@ td .kw{display:block;font-size:11px;margin:0}
 const DOSES=['2.5','5','7.5','10','12.5','15'];
 const st={pCity:'전체',dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체',dir:'go',sFrom:'PUS',sTo:'FUK',sDep:'',sRet:'',sPax:'1'};
 try{Object.assign(st,JSON.parse(localStorage.getItem('jt-ui')||'{}'),{q:''})}catch(e){}
+try{const qc=new URLSearchParams(location.search).get('city');if(qc){st.pCity=qc;history.replaceState(null,'',location.pathname+location.hash)}}catch(e){}
 const save=()=>{try{const {q,...r}=st;localStorage.setItem('jt-ui',JSON.stringify(r))}catch(e){}};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
