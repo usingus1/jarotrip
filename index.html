@@ -172,7 +172,21 @@ td .kw{display:block;font-size:11px;margin:0}
 .quick{display:flex;flex-wrap:wrap;gap:6px}
 .quick button{all:unset;cursor:pointer;font-size:13px;border:1px solid var(--line);padding:6px 10px;background:var(--soft)}
 .serr{color:var(--red);font-size:14px;font-weight:600}
-#sres{padding:0 16px 16px;display:grid;gap:12px}
+#sres{padding:0 16px 16px;display:grid;gap:12px;scroll-margin-top:12px}
+.sbtn{position:relative}
+.sbtn[aria-busy=true]{opacity:.85;pointer-events:none}
+.sbtn[aria-busy=true]::before{content:"";width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:10px;animation:spin .7s linear infinite}
+.sbtn.ok{background:var(--ok);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.done{display:flex;gap:10px;align-items:center;background:var(--ok);color:#fff;padding:12px 14px;font-weight:800;font-size:15px;line-height:1.4}
+.done span{font-weight:600;font-size:13px;opacity:.95;display:block}
+.done b{font-size:22px;line-height:1}
+.loading{padding:18px 0;color:var(--mute);font-size:14px}
+#sres.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{background:color-mix(in srgb,var(--ok) 22%,transparent)}100%{background:transparent}}
+.serr.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+@media(prefers-reduced-motion:reduce){.sbtn[aria-busy=true]::before,#sres.flash,.serr.shake{animation:none}}
 .sum{font-size:15px;line-height:1.5}.sum b{font-size:18px}
 .ref{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ref .part b{font-size:15px}
@@ -292,10 +306,10 @@ td .kw{display:block;font-size:11px;margin:0}
      <label>&nbsp;<button type="button" class="btn o" id="s-clear" style="height:46px;justify-content:center">오는 날 지우기(편도)</button></label>
     </div>
     <div class="quick" id="quick"><span class="lab" style="align-self:center">머무는 기간</span><button type="button" data-n="1">1박 2일</button><button type="button" data-n="2">2박 3일</button><button type="button" data-n="3">3박 4일</button><button type="button" data-n="4">4박 5일</button></div>
-    <p class="serr" id="serr" hidden></p>
-    <button class="btn big" type="submit">이 날짜로 찾기</button>
+    <p class="serr" id="serr" role="alert" hidden></p>
+    <button class="btn big sbtn" type="submit" id="s-go">이 날짜로 찾기</button>
    </form>
-   <div id="sres"></div>
+   <div id="sres" aria-live="polite"></div>
   </details>
   <h2>매일 조회하는 최저가</h2>
   <div class="ctl">
@@ -579,16 +593,16 @@ function initSearch(){
   const sync=()=>{st.sFrom=$('s-from').value;st.sTo=$('s-to').value;st.sDep=$('s-dep').value;st.sRet=$('s-ret').value;st.sPax=$('s-pax').value;$('s-ret').min=st.sDep||t;save()};
   ['s-from','s-to','s-dep','s-ret','s-pax'].forEach(id=>$(id).addEventListener('change',()=>{sync();if($('sres').innerHTML)runSearch()}));
   $('s-clear').onclick=()=>{$('s-ret').value='';sync();if($('sres').innerHTML)runSearch()};
-  $('quick').onclick=e=>{const b=e.target.closest('button[data-n]');if(!b)return;if(!$('s-dep').value)$('s-dep').value=addDays(t,14);$('s-ret').value=addDays($('s-dep').value,+b.dataset.n);sync();runSearch()};
-  $('sf').onsubmit=e=>{e.preventDefault();sync();runSearch()};
+  $('quick').onclick=e=>{const b=e.target.closest('button[data-n]');if(!b)return;if(!$('s-dep').value)$('s-dep').value=addDays(t,14);$('s-ret').value=addDays($('s-dep').value,+b.dataset.n);sync();runSearch(true)};
+  $('sf').onsubmit=e=>{e.preventDefault();sync();runSearch(true)};
 }
 function refLine(city,dir,ship){
   const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(ship?x.mode==='배':x.mode==='항공')).sort((a,c)=>a.cur.price-c.cur.price)[0];
-  return b?`<b><span class="num">₩${fmt(b.cur.price)}</span></b><span class="m">${esc(b.route)}${b.cur.dep?' · '+esc(md(b.cur.dep))+' 출발':''}${b.cur.carrier?' · '+esc(b.cur.carrier):''}</span>`:`<span class="m">${dir==='back'?'오는 편 기록은 다음 조회부터 쌓여요':'아직 기록 없음'}</span>`;
+  return b?`<b><span class="num">₩${fmt(b.cur.price)}</span></b><span class="m">${esc(b.route)}${b.cur.dep?' · '+esc(md(b.cur.dep))+' 출발':''}${b.cur.carrier?' · '+esc(b.cur.carrier):''}</span>`:`<b style="font-size:14px;font-weight:600">${dir==='back'?'오늘 낮 조회부터 쌓여요':'아직 기록 없음'}</b>`;
 }
-function runSearch(){
+function renderSearch(){
   const f=st.sFrom,t=st.sTo,dep=st.sDep,ret=st.sRet,pax=st.sPax,today=todayStr();
-  const err=m=>{$('serr').textContent=m;$('serr').hidden=false;$('sres').innerHTML=''};
+  const err=m=>{$('serr').textContent=m;$('serr').hidden=false;$('sres').innerHTML='';return false};
   $('serr').hidden=true;
   if(!dep)return err('가는 날을 골라 주세요.');
   if(dep<today)return err('가는 날이 이미 지났어요. 오늘 이후 날짜를 골라 주세요.');
@@ -609,13 +623,38 @@ function runSearch(){
    ${shipLinks.length||shipOnly?`<div class="go">🚢 배는 날짜별 요금을 선사·대리점 예약 페이지에서 직접 골라야 해요.${shipLinks.length?`<div class="btns" style="margin-top:8px">${shipLinks.map(b=>`<a class="btn o" href="${esc(b.cur.src)}" target="_blank" rel="noopener">${esc(b.route)} ${esc(b.cur.carrier||'배')} ↗</a>`).join('')}</div>`:''}</div>`:''}
    ${city&&JP_CITY[city]?`<div class="go">🏨 같은 날짜로 숙소도 찾기 (${md(dep)} 체크인 · ${md(ret||addDays(dep,1))} 체크아웃)<div class="btns" style="margin-top:8px">${stayLinks({name:city,city,addr:''},dep,ret||addDays(dep,1),pax).slice(1).map(([t,u])=>`<a class="btn o" href="${esc(u)}" target="_blank" rel="noopener">${esc(city)} · ${t} ↗</a>`).join('')}</div><p class="hint" style="margin:6px 0 0">특정 병원 근처로 찾으려면 병원 카드를 펼쳐 "근처 숙소 찾기"를 쓰세요.</p></div>`:''}
    ${cnt?`<a class="tag" href="#clinics" data-city="${esc(city)}" style="justify-self:start;font-size:14px;padding:6px 10px">${esc(city)} 병원 ${cnt}곳 보기 →</a>`:''}`;
+  return {f,t,dep,ret,shipOnly};
+}
+let searchTimer=null;
+function runSearch(user){
+  if(!user){renderSearch();return}
+  const btn=$('s-go');clearTimeout(searchTimer);
+  btn.classList.remove('ok');btn.setAttribute('aria-busy','true');btn.textContent='찾는 중…';
+  $('serr').hidden=true;
+  $('sres').innerHTML='<p class="loading">고른 날짜와 공항으로 검색 링크를 만드는 중이에요…</p>';
+  setTimeout(()=>{
+    const r=renderSearch();
+    btn.removeAttribute('aria-busy');
+    if(!r){
+      btn.textContent='이 날짜로 찾기';
+      const e=$('serr');e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake');
+      e.scrollIntoView({behavior:'smooth',block:'center'});return;
+    }
+    const what=r.shipOnly?'배편 예약 페이지와 숙소 검색':'항공권 검색';
+    $('sres').insertAdjacentHTML('afterbegin',`<div class="done" role="status"><b>✓</b><div>조회 준비 완료! ${md(r.dep)} 출발${r.ret?' · '+md(r.ret)+' 귀국':' · 편도'}<span>아래 버튼을 누르면 ${what}이 이 날짜로 열려 실시간 요금을 보여줘요.</span></div></div>`);
+    const box=$('sres');box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');
+    box.scrollIntoView({behavior:'smooth',block:'start'});
+    btn.classList.add('ok');btn.textContent='✓ 찾기 완료 · 다시 찾기';
+    try{navigator.vibrate&&navigator.vibrate(30)}catch(_){}
+    searchTimer=setTimeout(()=>{btn.classList.remove('ok');btn.textContent='이 날짜로 찾기'},4000);
+  },450);
 }
 function openSearch(city,from){
   const ap=AP_OF_CITY[city];if(!ap)return;
   st.sTo=ap;if(from)st.sFrom=from;save();
   $('s-to').value=st.sTo;$('s-from').value=st.sFrom;
   if(location.hash!=='#travel')location.hash='#travel';
-  setTimeout(()=>{$('search').open=true;$('search').scrollIntoView({behavior:'smooth',block:'start'});runSearch()},60);
+  setTimeout(()=>{$('search').open=true;runSearch(true)},60);
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-search]');if(b){e.preventDefault();openSearch(b.dataset.search,b.dataset.from);return}
