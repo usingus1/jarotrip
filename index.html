@@ -34,11 +34,11 @@ h1 b{color:var(--red)}
 .sub{color:var(--mute);margin:8px 0 0;font-size:13px;display:flex;flex-wrap:wrap;gap:2px 14px}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px}
 main{max-width:1240px;margin:0 auto;padding:0 max(5vw,16px) 40px}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs a{color:var(--bg);text-decoration:none;text-align:center;font-weight:800;font-size:14px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:.6}
-nav.tabs a small{font-size:11px;font-weight:600}
+nav.tabs a small{font-size:10.5px;font-weight:600;white-space:nowrap}
 nav.tabs a[aria-current=page]{opacity:1;box-shadow:inset 0 4px 0 var(--red)}
-@media(min-width:900px){body{padding-bottom:0}nav.tabs{position:sticky;top:0;bottom:auto;max-width:1240px;margin:8px auto 0;grid-template-columns:repeat(4,max-content);gap:0;background:var(--bg);border-bottom:3px solid var(--ink);padding:0 max(5vw,16px)}nav.tabs a{color:var(--ink);height:48px;padding:0 18px;flex-direction:row;gap:8px;opacity:1}nav.tabs a[aria-current=page]{background:var(--ink);color:var(--bg);box-shadow:none}}
+@media(min-width:900px){body{padding-bottom:0}nav.tabs{position:sticky;top:0;bottom:auto;max-width:1240px;margin:8px auto 0;grid-template-columns:repeat(5,max-content);gap:0;background:var(--bg);border-bottom:3px solid var(--ink);padding:0 max(5vw,16px)}nav.tabs a{color:var(--ink);height:48px;padding:0 18px;flex-direction:row;gap:8px;opacity:1}nav.tabs a[aria-current=page]{background:var(--ink);color:var(--bg);box-shadow:none}}
 a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 .ctl{padding:12px 0 10px;border-bottom:1px solid var(--line);display:grid;gap:10px}
 .line{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.line::-webkit-scrollbar{display:none}
@@ -118,6 +118,34 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
 .hide{display:none!important}
+a.logo{color:inherit;text-decoration:none;display:inline-block}
+a.logo:hover h1 b{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;padding:22px 0 8px}
+.hero h2{font-size:clamp(28px,5vw,44px);line-height:1.12;margin:0 0 12px;text-wrap:balance;letter-spacing:-.01em}
+.hero h2 em{font-style:normal;color:var(--red)}
+.hero p{margin:0 0 16px;font-size:16px;color:var(--mute);max-width:34em}
+.hero .fig{position:relative;min-height:260px}
+.hero .fig svg{position:absolute;inset:0;width:100%;height:100%}
+.cta{display:flex;flex-wrap:wrap;gap:8px}
+.cta .btn{height:52px;font-size:16px;padding:0 20px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:3px solid var(--ink);border-bottom:1px solid var(--line);margin:18px 0}
+.stat{padding:14px 12px 14px 0}
+.stat+.stat{border-left:1px solid var(--line);padding-left:14px}
+.stat .m{font-size:12px;color:var(--mute);display:block}
+.stat .v{font-size:clamp(22px,4vw,32px);line-height:1.1;display:block;margin:4px 0 2px}
+.stat .s{font-size:12px;color:var(--mute)}
+.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 10px}
+.menu a{display:grid;gap:4px;align-content:start;min-height:118px;padding:16px;border:2px solid var(--ink);text-decoration:none;color:var(--ink);background:var(--bg)}
+.menu a:hover{background:var(--soft)}
+.menu a b{font-size:18px;line-height:1.25}
+.menu a span{font-size:13px;color:var(--mute)}
+.menu a i{font-style:normal;font-size:22px}
+.menu a.main{background:var(--red);border-color:var(--red);color:#fff}.menu a.main span{color:#ffe3e8}
+.steps{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;counter-reset:s}
+.steps li{counter-increment:s;padding:12px;background:var(--soft);font-size:14px}
+.steps li::before{content:counter(s);display:block;font-family:Archivo,sans-serif;font-weight:800;font-size:28px;color:var(--red);line-height:1}
+@media(max-width:700px){.hero{grid-template-columns:minmax(0,1fr)}.hero .fig{min-height:200px;order:-1}.stats{grid-template-columns:minmax(0,1fr)}.stat+.stat{border-left:0;border-top:1px solid var(--line);padding-left:0}.steps{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:no-preference){.route-line{stroke-dasharray:4 6;animation:dash 1.6s linear infinite}@keyframes dash{to{stroke-dashoffset:-20}}}
 .stay{border:1.5px solid var(--ink);padding:12px;display:grid;gap:10px}
 .stay h4{margin:0;font-size:16px}
 .stay .sgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -155,13 +183,14 @@ td .kw{display:block;font-size:11px;margin:0}
 </head>
 <body>
 <header>
- <div class="brand"><h1>자로<b>트립</b></h1><span class="tag-line">일본 마운자로 병원 · 항공 · 배편을 한 곳에서</span></div>
+ <div class="brand"><a class="logo" href="#main" aria-label="자로트립 처음 화면"><h1>자로<b>트립</b></h1></a><span class="tag-line">일본 마운자로 병원 · 항공 · 배편을 한 곳에서</span></div>
  <p class="sub"><span><span class="dot"></span><span id="upd">불러오는 중…</span></span><span id="fxl"></span></p>
  <div class="inst hide" id="inst"><span id="inst-t">홈 화면에 추가하면 앱처럼 바로 열 수 있어요.</span><span><button id="inst-b" class="hide">설치</button><button class="x" id="inst-x" aria-label="닫기">✕</button></span></div>
 </header>
 
 <nav class="tabs" aria-label="메뉴">
- <a href="#home" data-t="home">한눈에<small>도시별 총비용</small></a>
+ <a href="#main" data-t="main">홈<small>처음 화면</small></a>
+ <a href="#home" data-t="home">비교<small>도시별 총비용</small></a>
  <a href="#clinics" data-t="clinics">병원<small>용량별 가격</small></a>
  <a href="#travel" data-t="travel">가는 길<small>항공·배 최저가</small></a>
  <a href="#log" data-t="log">변동<small>최근 바뀐 것</small></a>
@@ -173,7 +202,54 @@ td .kw{display:block;font-size:11px;margin:0}
   <div class="line" id="periods"><span class="lab">기간</span></div>
  </div>
 
- <section id="p-home">
+ <section id="p-main" class="hide">
+  <div class="hero">
+   <div>
+    <h2>일본 마운자로,<br><em>병원부터 항공·숙소까지</em> 한&nbsp;번에</h2>
+    <p>한국어로 상담되는 일본 병원의 용량별 가격과 한국↔일본 항공·배편 최저가를 매일 자동으로 모아요. 원화로 바로 비교하고, 날짜만 정하면 항공권과 숙소 검색까지 이어져요.</p>
+    <div class="cta"><a class="btn" href="#home">어느 도시가 쌀까? 비교하기</a><a class="btn o" href="#travel" data-open-search>날짜로 여행 짜기</a></div>
+   </div>
+   <div class="fig" aria-hidden="true">
+    <svg viewBox="0 0 360 240" preserveAspectRatio="xMidYMid meet">
+     <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e4002b"/></marker></defs>
+     <rect x="0" y="0" width="360" height="240" fill="var(--soft)"/>
+     <text x="28" y="34" font-size="12" font-weight="800" fill="var(--mute)">한국</text>
+     <text x="250" y="34" font-size="12" font-weight="800" fill="var(--mute)">일본</text>
+     <g fill="none" stroke="#e4002b" stroke-width="2.5" marker-end="url(#ar)">
+      <path class="route-line" d="M70 80 C150 40 200 50 262 66"/>
+      <path class="route-line" d="M70 80 C150 110 200 120 262 124"/>
+      <path class="route-line" d="M78 170 C140 160 200 140 262 124"/>
+      <path class="route-line" d="M78 170 C150 190 210 190 262 184"/>
+     </g>
+     <g font-size="13" font-weight="800" fill="var(--ink)">
+      <circle cx="62" cy="80" r="7" fill="var(--ink)"/><text x="24" y="104">서울·인천</text>
+      <circle cx="70" cy="170" r="7" fill="var(--ink)"/><text x="46" y="194">부산</text>
+      <circle cx="272" cy="66" r="7" fill="var(--ink)"/><text x="284" y="70">도쿄</text>
+      <circle cx="272" cy="124" r="7" fill="var(--ink)"/><text x="284" y="128">오사카</text>
+      <circle cx="272" cy="184" r="7" fill="var(--ink)"/><text x="284" y="188">후쿠오카</text>
+     </g>
+     <g transform="translate(160 62) rotate(-12)"><path d="M0 6 L22 0 L26 3 L6 9 L10 18 L6 19 L0 10 L-8 12 L-9 9z" fill="var(--ink)"/></g>
+     <g transform="translate(150 176)"><path d="M0 0 H34 L28 10 H6z" fill="#1d4ed8"/><rect x="12" y="-8" width="10" height="8" fill="#1d4ed8"/></g>
+    </svg>
+   </div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="menu">
+   <a class="main" href="#home"><i>📊</i><b>도시별 총비용 비교</b><span>병원 + 왕복 교통을 원화로 한눈에</span></a>
+   <a href="#clinics"><i>🏥</i><b>병원 가격 보기</b><span id="m-clinics">한국어 상담 병원 용량별 가격</span></a>
+   <a href="#travel"><i>✈️</i><b>항공·배편 최저가</b><span>가는 편·오는 편 매일 조회</span></a>
+   <a href="#travel" data-open-search><i>📅</i><b>날짜로 여행 짜기</b><span>항공권·근처 숙소 바로 검색</span></a>
+  </div>
+  <h2>이렇게 써요</h2>
+  <ol class="steps">
+   <li><b>용량과 기간 고르기</b><br>2.5mg~15mg, 1개월(4펜)·3개월(12펜) 중에서 골라요.</li>
+   <li><b>도시·병원 비교하기</b><br>원화 총비용이 가장 낮은 도시와 병원을 확인해요.</li>
+   <li><b>날짜 정해 예약 사이트로</b><br>항공권과 병원 근처 숙소를 같은 날짜로 바로 찾아요.</li>
+  </ol>
+  <p class="hint" style="margin-top:14px"><a href="#log">최근 바뀐 가격·예약 상황 보기 →</a></p>
+ </section>
+
+ <section id="p-home" class="hide">
   <h2>어느 도시가 가장 저렴할까?</h2>
   <p class="hint">고른 용량의 병원 최저가(원화 환산)에 가는 편·오는 편 교통 최저가를 더한 예상 금액이에요. 도시를 누르면 그 도시 병원만 볼 수 있어요.</p>
   <div id="cities"></div>
@@ -564,17 +640,31 @@ function renderLog(){
   $('log').innerHTML=items.slice(0,150).map(r=>`<li><span class="num">${esc(r.d)}</span><div><span class="k">${esc(r.k)}</span><b>${esc(r.n)}</b><div>${esc(r.t)}</div></div>${r.s?`<span class="s">${esc(r.s)}</span>`:''}</li>`).join('')||'<li>기록 없음</li>';
 }
 
+/* ---------- 메인 ---------- */
+function renderMain(){
+  if(!C)return;
+  const prices=C.clinics.map(c=>c.p['1_2.5']).filter(Boolean),mn=prices.length?Math.min(...prices):null;
+  const go=travelBoard().filter(b=>b.dir==='go'&&b.cur).sort((a,b)=>a.cur.price-b.cur.price)[0];
+  const cities=new Set(C.clinics.map(c=>c.city).filter(c=>!/온라인|전국/.test(c))).size;
+  $('stats').innerHTML=`
+   <div class="stat"><span class="m">한국어 상담 병원</span><span class="v num">${C.clinics.length}곳</span><span class="s">${cities}개 도시 + 온라인</span></div>
+   <div class="stat"><span class="m">2.5mg 1개월 최저</span><span class="v num">${mn?'¥'+fmt(mn):'–'}</span><span class="s">${mn&&FX?kw(mn):''}</span></div>
+   <div class="stat"><span class="m">한국→일본 편도 최저</span><span class="v num">${go?'₩'+fmt(go.cur.price):'–'}</span><span class="s">${go?esc(go.route)+' '+esc(go.mode):'조회 중'}</span></div>`;
+  $('m-clinics').textContent=`한국어 상담 병원 ${C.clinics.length}곳 용량별 가격`;
+}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-open-search]');if(!a)return;setTimeout(()=>{$('search').open=true;$('search').scrollIntoView({behavior:'smooth',block:'start'});$('s-dep').focus({preventScroll:true})},80)});
+
 /* ---------- 라우팅 ---------- */
-const TABS=['home','clinics','travel','log'];
+const TABS=['main','home','clinics','travel','log'];
 function route(){
-  const t=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'home';
+  const t=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'main';
   TABS.forEach(x=>{$('p-'+x).classList.toggle('hide',x!==t);document.querySelector(`nav a[data-t=${x}]`).toggleAttribute('aria-current',x===t);if(x===t)document.querySelector(`nav a[data-t=${x}]`).setAttribute('aria-current','page')});
   $('doseCtl').classList.toggle('hide',!(t==='home'||t==='clinics'));
   renderAll();scrollTo(0,0);
 }
 function renderAll(){
-  const t=location.hash.slice(1)||'home';
-  if(t==='clinics')renderClinics();else if(t==='travel')renderTravel();else if(t==='log')renderLog();else renderHome();
+  const h=location.hash.slice(1),t=TABS.includes(h)?h:'main';
+  if(t==='main')renderMain();else if(t==='clinics')renderClinics();else if(t==='travel')renderTravel();else if(t==='log')renderLog();else renderHome();
 }
 addEventListener('hashchange',route);
 
