@@ -118,6 +118,11 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
 .hide{display:none!important}
+.stay{border:1.5px solid var(--ink);padding:12px;display:grid;gap:10px}
+.stay h4{margin:0;font-size:16px}
+.stay .sgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stay .sgrid input,.stay .sgrid select{height:44px}
+@media(max-width:600px){.stay .sgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.stay .sgrid label:last-child{grid-column:1/-1}}
 .kw{display:block;font-family:"Noto Sans KR",sans-serif;font-weight:600;font-size:12px;color:var(--mute);letter-spacing:0;margin-top:2px}
 td .kw{display:block;font-size:11px;margin:0}
 .search{border:2px solid var(--ink);margin:14px 0 4px}
@@ -226,7 +231,7 @@ td .kw{display:block;font-size:11px;margin:0}
 
  <div class="note">
   <p>정보 제공용 페이지예요. 마운자로는 전문의약품이라 처방 여부와 용량은 진찰한 의사가 정하고, 주사 방법·부작용 상담도 의사와 하세요. 가격·예약 상황·운임은 수시로 바뀌니 예약 전 병원과 항공사·선사에서 직접 확인하세요.</p>
-  <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편 "매일 조회하는 최저가"는 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이고, 가는 편과 오는 편을 따로 조회해요. 날짜를 정해 찾으면 네이버 항공권·스카이스캐너·구글 항공편이 그 날짜로 열려 실시간 요금을 확인할 수 있어요.</p>
+  <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편 "매일 조회하는 최저가"는 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이고, 가는 편과 오는 편을 따로 조회해요. 날짜를 정해 찾으면 네이버 항공권·스카이스캐너·구글 항공편이, 병원 근처 숙소 찾기는 구글 지도·부킹닷컴·아고다가 그 날짜로 열려 실시간 요금을 확인할 수 있어요.</p>
   <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요.</p>
  </div>
 </main>
@@ -380,6 +385,7 @@ function renderClinics(){
      <div class="arw" aria-hidden="true">›</div></summary>
      <div class="det">${priceTable(c)}
       ${tr||bk?`<div class="go">✈ ${tr?`가는 편 최저 <b>${esc(tr.route)} ${esc(tr.mode)} <span class="num">₩${fmt(tr.cur.price)}</span></b>${tr.cur.dep?' ('+esc(tr.cur.dep)+')':''}`:''}${bk?`<br>✈ 오는 편 최저 <b>${esc(bk.route)} ${esc(bk.mode)} <span class="num">₩${fmt(bk.cur.price)}</span></b>${bk.cur.dep?' ('+esc(bk.cur.dep)+')':''}`:''}</div>`:''}
+      ${/온라인|전국/.test(c.city)?'':stayBox(c)}
       <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
       <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}${AP_OF_CITY[c.city]?`<button class="btn o" data-search="${esc(c.city)}">✈ 날짜로 항공권 찾기</button>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
      </div></details>`;
@@ -480,6 +486,7 @@ function runSearch(){
     <div class="part"><span class="m">참고 · 오는 편 최근 최저가 (${shipOnly?'배':'항공'})</span>${refLine(city,'back',shipOnly)}</div>
    </div>
    ${shipLinks.length||shipOnly?`<div class="go">🚢 배는 날짜별 요금을 선사·대리점 예약 페이지에서 직접 골라야 해요.${shipLinks.length?`<div class="btns" style="margin-top:8px">${shipLinks.map(b=>`<a class="btn o" href="${esc(b.cur.src)}" target="_blank" rel="noopener">${esc(b.route)} ${esc(b.cur.carrier||'배')} ↗</a>`).join('')}</div>`:''}</div>`:''}
+   ${city&&JP_CITY[city]?`<div class="go">🏨 같은 날짜로 숙소도 찾기 (${md(dep)} 체크인 · ${md(ret||addDays(dep,1))} 체크아웃)<div class="btns" style="margin-top:8px">${stayLinks({name:city,city,addr:''},dep,ret||addDays(dep,1),pax).slice(1).map(([t,u])=>`<a class="btn o" href="${esc(u)}" target="_blank" rel="noopener">${esc(city)} · ${t} ↗</a>`).join('')}</div><p class="hint" style="margin:6px 0 0">특정 병원 근처로 찾으려면 병원 카드를 펼쳐 "근처 숙소 찾기"를 쓰세요.</p></div>`:''}
    ${cnt?`<a class="tag" href="#clinics" data-city="${esc(city)}" style="justify-self:start;font-size:14px;padding:6px 10px">${esc(city)} 병원 ${cnt}곳 보기 →</a>`:''}`;
 }
 function openSearch(city,from){
@@ -492,6 +499,59 @@ function openSearch(city,from){
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-search]');if(b){e.preventDefault();openSearch(b.dataset.search,b.dataset.from);return}
   const a=e.target.closest('#sres [data-city]');if(a){st.city=a.dataset.city;save();buildCityChips()}
+});
+
+/* ---------- 근처 숙소 ---------- */
+const JP_CITY={'도쿄':'東京','오사카':'大阪','후쿠오카':'福岡','나고야':'名古屋','삿포로':'札幌','교토':'京都','히로시마':'広島','가고시마':'鹿児島'};
+const plainName=c=>String(c.name).replace(/\(.*?\)/g,'').trim();
+const AREAS=[['긴자','銀座'],['신주쿠','新宿'],['시부야','渋谷'],['이케부쿠로','池袋'],['우에노','上野'],['고탄다','五反田'],['신바시','新橋'],['이치가야','市谷'],['간다','神田'],['아카사카','赤坂'],['롯폰기','六本木'],['텐진','天神'],['하카타','博多'],['나카스','中洲'],['신사이바시','心斎橋'],['난바','難波'],['우메다','梅田'],['사카에','栄'],['메이에키','名駅'],['스스키노','すすきの']];
+function areaOf(c){
+  const hay=String(c.name)+' '+String(c.addr||'');
+  let best=null,bi=1e9;for(const [ko,jp] of AREAS)for(const w of [ko,jp]){const i=hay.indexOf(w);if(i>=0&&i<bi){bi=i;best=ko}}
+  if(best)return `${c.city} ${best}`;
+  const m=String(c.name).match(/\(([^)]+)\)/);
+  let a=m?m[1].split(/[·,/]/)[0].trim():'';
+  if(a&&(!/[가-힣]/.test(a)||/점$|제휴|개원|온라인/.test(a)))a='';
+  if(a)return `${c.city} ${a}`;
+  const addr=String(c.addr||'');
+  const ward=addr.match(/([^\s\d/]{1,6}[区])/);if(ward)return `${JP_CITY[c.city]||c.city} ${ward[1]}`;
+  const stn=addr.match(/([가-힣]{2,10})역/);if(stn)return `${c.city} ${stn[1]}역`;
+  return c.city;
+}
+function stayDates(){
+  const t=todayStr();let ci=st.sDep&&st.sDep>=t?st.sDep:addDays(t,14);let co=st.sRet&&st.sRet>ci?st.sRet:addDays(ci,1);return [ci,co];
+}
+function stayLinks(c,ci,co,n){
+  const area=areaOf(c),nights=Math.max(1,Math.round((new Date(co)-new Date(ci))/864e5));
+  const near=`호텔 near ${plainName(c)} ${c.addr&&!/온라인/.test(c.addr)?c.addr.split('/')[0]:c.city}`;
+  return [
+    ['지도에서 근처 숙소',`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(near)}`],
+    ['부킹닷컴',`https://www.booking.com/searchresults.ko.html?ss=${encodeURIComponent(area)}&checkin=${ci}&checkout=${co}&group_adults=${n}&no_rooms=1&group_children=0`],
+    ['아고다',`https://www.agoda.com/ko-kr/search?textToSearch=${encodeURIComponent(area)}&checkIn=${ci}&los=${nights}&adults=${n}&rooms=1`]
+  ];
+}
+function stayBox(c){
+  const [ci,co]=stayDates(),n=st.sPax||'1';
+  return `<div class="stay" data-stay="${c.id}">
+   <h4>🏨 근처 숙소 찾기 <span class="m" style="font-weight:600;font-size:13px">· ${esc(areaOf(c))} 주변</span></h4>
+   <div class="sgrid">
+    <label>체크인<input type="date" class="st-ci" value="${ci}" min="${todayStr()}"></label>
+    <label>체크아웃<input type="date" class="st-co" value="${co}" min="${addDays(ci,1)}"></label>
+    <label>인원<select class="st-n">${[1,2,3,4,5,6].map(x=>`<option ${String(x)===String(n)?'selected':''}>${x}</option>`).join('')}</select></label>
+   </div>
+   <div class="btns st-links">${stayLinks(c,ci,co,n).map(([t,u],i)=>`<a class="btn ${i?'o':''}" href="${esc(u)}" target="_blank" rel="noopener">${t} ↗</a>`).join('')}</div>
+   <p class="hint" style="margin:0">날짜는 항공권 찾기와 같이 맞춰져요. 예약·결제는 각 사이트에서 직접 해요.</p>
+  </div>`;
+}
+document.addEventListener('change',e=>{
+  const box=e.target.closest('.stay');if(!box)return;
+  const c=C&&C.clinics.find(x=>String(x.id)===box.dataset.stay);if(!c)return;
+  const ci=box.querySelector('.st-ci'),co=box.querySelector('.st-co'),n=box.querySelector('.st-n').value;
+  if(co.value<=ci.value)co.value=addDays(ci.value,1);
+  co.min=addDays(ci.value,1);
+  st.sDep=ci.value;st.sRet=co.value;st.sPax=n;save();
+  try{$('s-dep').value=st.sDep;$('s-ret').value=st.sRet;$('s-pax').value=n}catch(_){}
+  box.querySelector('.st-links').innerHTML=stayLinks(c,ci.value,co.value,n).map(([t,u],i)=>`<a class="btn ${i?'o':''}" href="${esc(u)}" target="_blank" rel="noopener">${t} ↗</a>`).join('');
 });
 
 /* ---------- 변동 ---------- */
