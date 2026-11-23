@@ -124,6 +124,12 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .pstep.off{opacity:.45}
 .pstep.off>h3{background:var(--mute)}
 .pbody{padding:14px 16px;display:grid;gap:12px}
+#p-cities{flex-wrap:wrap;overflow:visible;row-gap:8px}
+.cityh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:end;margin:18px 0 2px;padding:10px 0 8px;border-bottom:3px solid var(--ink)}
+.cityh:first-of-type{margin-top:6px}
+.cityh b{font-size:22px;line-height:1.1}
+.cityh .num{font-size:15px;text-align:right}
+.cityh .m{grid-column:1/-1;font-size:13px;color:var(--mute)}
 .pick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
 .pick:last-child{border-bottom:0}
 .pick .nm{font-size:16px}
@@ -370,6 +376,7 @@ td .kw{display:block;font-size:11px;margin:0}
      <label>오는 날<input type="date" id="p-ret"></label>
     </div>
     <div class="quick" id="p-quick"><span class="lab" style="align-self:center">머무는 기간</span><button type="button" data-n="1">1박 2일</button><button type="button" data-n="2">2박 3일</button><button type="button" data-n="3">3박 4일</button></div>
+    <div class="line" id="p-cities"><span class="lab">목적지</span></div>
     <div class="line" id="p-doses"><span class="lab">용량</span></div>
     <div class="line" id="p-periods"><span class="lab">기간</span></div>
     <p class="serr" id="p-err" role="alert" hidden></p>
@@ -436,7 +443,7 @@ td .kw{display:block;font-size:11px;margin:0}
 <script>
 {
 const DOSES=['2.5','5','7.5','10','12.5','15'];
-const st={dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체',dir:'go',sFrom:'PUS',sTo:'FUK',sDep:'',sRet:'',sPax:'1'};
+const st={pCity:'전체',dose:'2.5',period:'1',city:'전체',q:'',sort:'price',tour:false,ko:false,hasPrice:true,from:'전체',mode:'전체',dir:'go',sFrom:'PUS',sTo:'FUK',sDep:'',sRet:'',sPax:'1'};
 try{Object.assign(st,JSON.parse(localStorage.getItem('jt-ui')||'{}'),{q:''})}catch(e){}
 const save=()=>{try{const {q,...r}=st;localStorage.setItem('jt-ui',JSON.stringify(r))}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -803,9 +810,18 @@ function refFare(city,dir,group){
   return b[0]||null;
 }
 function planOk(){const t=todayStr();return st.pDep&&st.pDep>=t&&st.pRet&&st.pRet>st.pDep}
-function planCandidates(){
-  const k=key(),g=fromToGroup(st.pFrom);
-  return C.clinics.filter(c=>c.p[k]&&AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')&&c.tour!=='중단').map(c=>{
+function planCities(){
+  const cnt={};C.clinics.forEach(c=>{if(AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP'))cnt[c.city]=(cnt[c.city]||0)+1});
+  return Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]).map(c=>[c,`${c} ${cnt[c]}`]);
+}
+function buildPlanCities(){
+  const list=[['전체','전체 (추천순)'],...planCities()];
+  if(!list.some(x=>x[0]===st.pCity))st.pCity='전체';
+  chips('p-cities',list,'pCity','',()=>{refreshPlan()});
+}
+function planCandidates(all){
+  const k=key(),g=fromToGroup(st.pFrom),city=all?'전체':(st.pCity||'전체');
+  return C.clinics.filter(c=>c.p[k]&&AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')&&c.tour!=='중단'&&(city==='전체'||c.city===city)).map(c=>{
     const won=yen2won(c.p[k]),go=refFare(c.city,'go',g),bk=refFare(c.city,'back',g);
     const total=won!=null?won+(go?go.cur.price:0)+(bk?bk.cur.price:0):null;
     return {c,won,go,bk,total,full:!!(go&&bk),known:(go?1:0)+(bk?1:0),closed:/마감|중단|빈자리 없음/.test(c.status||'')};
@@ -813,14 +829,19 @@ function planCandidates(){
 }
 function renderPlanList(){
   if(!C)return;
-  const L=planCandidates(),k=key();
-  $('p-list').innerHTML=`<p class="hint" style="margin:0">${keyLabel()} · ${esc(apName(st.pFrom))} 출발 기준이에요. <b>교통 운임이 확인된 곳</b>을 먼저, 그 안에서 병원비(원화) + 교통 최저가를 더한 <b>예상 총액이 낮은 순</b>으로 보여 줘요. 숙박비는 빠져 있어요.</p>`+
-  (L.length?L.map(x=>{const c=x.c;return `<div class="pick ${st.pClinic===c.name?'sel':''}">
-    <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)} · ¥${fmt(c.p[k])}${x.won?' ≈ '+man(x.won)+'원':''}</div><div class="tags">${tagFor(c)}</div></div>
+  const L=planCandidates(),k=key(),sel=st.pCity||'전체';
+  const groups={};L.forEach(x=>(groups[x.c.city]=groups[x.c.city]||[]).push(x));
+  const order=Object.keys(groups).sort((a,b)=>{const A=groups[a][0],B=groups[b][0];return (B.known-A.known)||((A.total??1e12)-(B.total??1e12))});
+  const card=x=>{const c=x.c;return `<div class="pick ${st.pClinic===c.name?'sel':''}">
+    <div><div class="nm">${esc(c.name)}</div><div class="meta">¥${fmt(c.p[k])}${x.won?' ≈ '+man(x.won)+'원':''}${c.status&&c.status!=='확인 필요'?' · '+esc(c.status):''}</div><div class="tags">${tagFor(c)}</div></div>
     <div class="tot num">${x.total?'≈₩'+man(x.total):'¥'+fmt(c.p[k])}<small>${x.full?'병원+왕복 교통':x.go?'병원+가는 편':'병원만'}</small></div>
-    <div class="why">${x.go?`가는 편 ${esc(x.go.mode)} ₩${fmt(x.go.cur.price)}`:'가는 편 운임 수집 중'} · ${x.bk?`오는 편 ${esc(x.bk.mode)} ₩${fmt(x.bk.cur.price)}`:'오는 편 운임 수집 중'}${c.status&&c.status!=='확인 필요'?' · '+esc(c.status):''}</div>
     <button class="btn ${st.pClinic===c.name?'':'o'}" data-plan="${esc(c.name)}">${st.pClinic===c.name?'✓ 이 병원으로 짜는 중':'이 병원으로 여행 짜기'}</button>
-   </div>`}).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 없어요. 용량이나 기간을 바꿔 보세요.</div>`);
+   </div>`};
+  const head=city=>{const g=groups[city],x=g[0],ap=AP_OF_CITY[city],AH=AIRPORT_HINT[ap];
+    return `<div class="cityh"><b>${esc(city)}</b><span class="num">${x.total?'최저 ≈₩'+man(x.total):''}</span>
+     <span class="m">병원 ${g.length}곳 · ${AH?esc(AH.name):''} · ${x.go?`가는 편 ${esc(x.go.mode)} ₩${fmt(x.go.cur.price)}`:'가는 편 운임 수집 중'} · ${x.bk?`오는 편 ${esc(x.bk.mode)} ₩${fmt(x.bk.cur.price)}`:'오는 편 운임 수집 중'}</span></div>`};
+  $('p-list').innerHTML=`<p class="hint" style="margin:0">${keyLabel()} · ${esc(apName(st.pFrom))} 출발 · 목적지 <b>${esc(sel==='전체'?'전체 도시':sel)}</b> 기준이에요. ${sel==='전체'?'교통 운임이 확인된 도시를 먼저, 도시 안에서는 ':''}병원비(원화) + 교통 최저가를 더한 <b>예상 총액이 낮은 순</b>이에요. 숙박비는 빠져 있어요.</p>`+
+   (order.length?order.map(city=>head(city)+groups[city].map(card).join('')).join(''):`<div class="empty">${esc(sel)}에서 ${keyLabel()} 가격이 확인된 병원이 없어요. 용량·기간이나 목적지를 바꿔 보세요.</div>`);
 }
 function planText(c,ap,dep,ret,n){
   return `[자로트립 여행 플랜]\n${md(dep)} ~ ${md(ret)} (${n}박 ${n+1}일)\n${apName(st.pFrom)} ⇄ ${AIRPORT_HINT[ap]?.name||ap}\n병원: ${c.name} (${c.city}) · ${keyLabel()} ¥${fmt(c.p[key()])}\n${c.contact?'연락: '+c.contact+'\n':''}${safeUrl(c.url)?c.url+'\n':''}${location.href.split('#')[0]}`;
@@ -892,6 +913,7 @@ function initPlan(){
   $('p-from').value=st.pFrom;$('p-pax').value=st.pPax;$('p-dep').value=st.pDep;$('p-ret').value=st.pRet;$('p-dep').min=t;$('p-ret').min=addDays(st.pDep,1);
   chips('p-doses',DOSES.map(x=>[x,x+'mg']),'dose','dose',refreshPlan);
   chips('p-periods',[['1','1개월'],['3','3개월']],'period','',refreshPlan);
+  if(C)buildPlanCities();
   const sync=()=>{st.pFrom=$('p-from').value;st.pPax=$('p-pax').value;st.pDep=$('p-dep').value;st.pRet=$('p-ret').value;$('p-ret').min=st.pDep?addDays(st.pDep,1):t;st.sFrom=st.pFrom;st.sDep=st.pDep;st.sRet=st.pRet;st.sPax=st.pPax;save()};
   ['p-from','p-pax','p-dep','p-ret'].forEach(id=>$(id).addEventListener('change',()=>{sync();refreshPlan()}));
   $('p-quick').onclick=e=>{const b=e.target.closest('button[data-n]');if(!b)return;if(!$('p-dep').value)$('p-dep').value=addDays(t,14);$('p-ret').value=addDays($('p-dep').value,+b.dataset.n);sync();refreshPlan()};
@@ -903,7 +925,7 @@ function initPlan(){
     if(!st.pRet||st.pRet<=st.pDep)return err('오는 날은 가는 날보다 뒤여야 해요.');
     const b=$('p-go');b.setAttribute('aria-busy','true');b.textContent='병원 찾는 중…';
     setTimeout(()=>{b.removeAttribute('aria-busy');b.textContent='✓ 조건 적용됨 · 다시 찾기';renderPlanList();
-      const cnt=planCandidates().length;flashTo('ps2',`${md(st.pDep)} ~ ${md(st.pRet)} 조건으로 갈 수 있는 병원 ${cnt}곳을 찾았어요.<span>예상 총액이 낮은 순서예요. 마음에 드는 병원의 버튼을 누르세요.</span>`);
+      const cnt=planCandidates().length,cs=st.pCity&&st.pCity!=='전체'?st.pCity:'';flashTo('ps2',`${md(st.pDep)} ~ ${md(st.pRet)} · ${cs?esc(cs)+'에서 ':''}갈 수 있는 병원 ${cnt}곳을 찾았어요.<span>${cs?'':'도시별로 묶어서, '}예상 총액이 낮은 순서예요. 마음에 드는 병원의 버튼을 누르세요.</span>`);
       if(st.pClinic)renderPlan()},400);
   };
   document.addEventListener('click',e=>{
@@ -920,6 +942,7 @@ function renderPlanTab(){
   if(!C)return;
   const ready=planOk();
   $('ps2').classList.toggle('off',!ready);$('ps3').classList.toggle('off',!(ready&&st.pClinic));
+  buildPlanCities();
   chips('p-doses',DOSES.map(x=>[x,x+'mg']),'dose','dose',refreshPlan);
   chips('p-periods',[['1','1개월'],['3','3개월']],'period','',refreshPlan);
   if(ready){renderPlanList();if(st.pClinic&&renderPlan()&&planJump){planJump=false;setTimeout(()=>$('ps3').scrollIntoView({behavior:'smooth',block:'start'}),60)}}
