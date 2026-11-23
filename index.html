@@ -118,6 +118,13 @@ a{color:var(--ink);text-decoration-color:var(--red);text-underline-offset:3px}
 .inst button{all:unset;cursor:pointer;font-weight:800;padding:0 14px;height:40px;display:inline-flex;align-items:center;background:var(--ink);color:var(--bg)}
 .inst .x{background:transparent;color:var(--mute);padding:0 8px}
 .hide{display:none!important}
+.doc{max-width:760px}
+.doc h2{margin-top:28px}
+.doc h3{font-size:17px;margin:18px 0 6px}
+.doc p,.doc li{font-size:15px;line-height:1.75}
+.doc ul{padding-left:20px;margin:6px 0}
+.foot{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;font-size:13px}
+.foot a{color:var(--mute)}
 a.logo{color:inherit;text-decoration:none;display:inline-block}
 a.logo:hover h1 b{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;padding:22px 0 8px}
@@ -246,7 +253,7 @@ td .kw{display:block;font-size:11px;margin:0}
    <li><b>도시·병원 비교하기</b><br>원화 총비용이 가장 낮은 도시와 병원을 확인해요.</li>
    <li><b>날짜 정해 예약 사이트로</b><br>항공권과 병원 근처 숙소를 같은 날짜로 바로 찾아요.</li>
   </ol>
-  <p class="hint" style="margin-top:14px"><a href="#log">최근 바뀐 가격·예약 상황 보기 →</a></p>
+  <p class="hint" style="margin-top:14px"><a href="#log">최근 바뀐 가격·예약 상황 보기 →</a> · <a href="#about">자로트립 소개·반입 안내 →</a></p>
  </section>
 
  <section id="p-home" class="hide">
@@ -305,10 +312,48 @@ td .kw{display:block;font-size:11px;margin:0}
   <ul class="log" id="log"></ul>
  </section>
 
+ <section id="p-about" class="hide doc">
+  <h2 id="intro">자로트립 소개</h2>
+  <p>자로트립은 일본에서 마운자로 상담·처방을 받으려는 한국인 여행자를 위해, 흩어져 있는 정보를 한곳에 모아 비교하기 쉽게 만든 한국어 여행 준비 사이트예요.</p>
+  <ul>
+   <li><b>병원 정보:</b> 한국어 페이지·카카오톡·한국어 직원 등 한국인 대상 안내가 있는 일본 병원의 용량별 가격, 예약 상황, 연락 방법을 정리해요. 병원 공식 페이지, 가격 집계 사이트, 한국어 가이드 같은 공개 자료를 매일 아침 다시 확인해 갱신해요.</li>
+   <li><b>교통 정보:</b> 한국↔일본 항공·배편의 가는 편·오는 편 최저가와 엔화 환율을 매일 낮 공개 자료로 조회해요.</li>
+   <li><b>검색 연결:</b> 날짜를 고르면 항공권 사이트와 병원 근처 숙소 검색이 같은 날짜로 열려요. 예약과 결제는 각 사이트에서 직접 해요.</li>
+  </ul>
+  <p>병원 목록과 순서는 <b>가격 기준</b>으로만 정해요. 병원으로부터 광고비나 소개 수수료를 받지 않으며, 특정 병원을 추천하거나 진료를 알선하지 않아요.</p>
+
+  <h3 id="medical">의료·반입 관련 안내</h3>
+  <ul>
+   <li>마운자로는 전문의약품이에요. 처방 여부와 용량은 진찰한 의사가 정하고, 사용법·부작용·보관 방법은 의사·약사와 상담하세요. 이 사이트는 의료 조언을 하지 않아요.</li>
+   <li>2026년 11월 12일부터 해외에서 적법하게 처방받아 구매한 비만치료제는 본인 치료 목적으로 최대 3개월분까지 여행자 휴대 반입이 허용됐어요. 처방 없이 산 약이나 해외 직구는 해당하지 않아요. 반입 조건은 식약처 의약품관리과(043-719-2652)나 관세청에 꼭 확인하세요.</li>
+   <li>가격·예약 상황·운임은 수시로 바뀌어요. 예약 전에 병원과 항공사·선사에서 직접 확인하세요.</li>
+  </ul>
+
+  <h2 id="affiliate">제휴 링크 고지</h2>
+  <p>이 사이트의 일부 숙소·항공권·여행 상품 링크는 제휴 링크이거나 앞으로 제휴 링크로 바뀔 수 있어요. 방문자가 제휴 링크를 통해 예약하면 운영자가 해당 회사로부터 소정의 수수료를 받을 수 있어요. 방문자가 내는 가격은 달라지지 않아요.</p>
+  <p>제휴 여부는 병원 정보나 가격 순서에 영향을 주지 않아요. 병원 관련 링크(공식 페이지·지도)는 제휴 링크가 아니에요.</p>
+
+  <h2 id="privacy">개인정보 처리방침</h2>
+  <h3>1. 수집하는 개인정보</h3>
+  <p>자로트립은 회원가입이 없고, 이름·연락처·이메일 등 개인정보를 받지 않아요. 문의 양식이나 결제 기능도 없어요.</p>
+  <h3>2. 이용자 기기에 저장되는 정보</h3>
+  <p>고른 용량·지역·여행 날짜 같은 화면 설정과, 오프라인으로 볼 수 있도록 내려받은 화면·데이터 파일이 이용자 기기의 브라우저 저장공간에만 저장돼요. 운영자에게 전송되지 않으며, 브라우저의 사이트 데이터 삭제로 언제든 지울 수 있어요.</p>
+  <h3>3. 외부 서비스</h3>
+  <ul>
+   <li><b>호스팅:</b> 사이트는 GitHub Pages에서 제공돼요. GitHub는 서비스 운영을 위해 접속 기록(IP 주소 등)을 처리할 수 있어요.</li>
+   <li><b>글꼴:</b> 화면 글꼴을 Google Fonts에서 불러와요. 이 과정에서 Google이 접속 정보를 받을 수 있어요.</li>
+   <li><b>외부 링크:</b> 항공권·숙소·지도·병원 사이트로 이동하면 그 사이트의 개인정보 처리방침이 적용되고, 제휴 링크의 경우 예약 확인을 위한 쿠키가 쓰일 수 있어요.</li>
+  </ul>
+  <h3>4. 방문 통계</h3>
+  <p>현재 별도의 방문 분석 도구나 광고 추적 도구를 쓰지 않아요. 앞으로 도입하면 이 방침에 먼저 알려 드릴게요.</p>
+  <p class="hint">시행일: 2026년 11월 24일</p>
+ </section>
+
  <div class="note">
   <p>정보 제공용 페이지예요. 마운자로는 전문의약품이라 처방 여부와 용량은 진찰한 의사가 정하고, 주사 방법·부작용 상담도 의사와 하세요. 가격·예약 상황·운임은 수시로 바뀌니 예약 전 병원과 항공사·선사에서 직접 확인하세요.</p>
   <p>병원 가격은 해당 용량 4펜(1개월) 또는 12펜(3개월) 총액(약값+진찰료, 세금 포함) 기준이고, 기준이 다른 곳은 '가격 메모'에 적혀 있어요. 원화 금액은 그날 환율로 계산한 대략값이에요. 항공·배편 "매일 조회하는 최저가"는 성인 1인 편도, 앞으로 두 달 안에서 가장 싼 날 기준이고, 가는 편과 오는 편을 따로 조회해요. 날짜를 정해 찾으면 네이버 항공권·스카이스캐너·구글 항공편이, 병원 근처 숙소 찾기는 구글 지도·부킹닷컴·아고다가 그 날짜로 열려 실시간 요금을 확인할 수 있어요.</p>
-  <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요.</p>
+  <p>매일 아침 병원 정보를, 매일 낮 항공·배편 운임을 공개 자료로 다시 확인해 자동으로 갱신해요. 일부 숙소·항공 링크는 제휴 링크일 수 있어요.</p>
+  <p class="foot"><a href="#about">자로트립 소개</a><a href="#about" data-jump="affiliate">제휴 링크 고지</a><a href="#about" data-jump="privacy">개인정보 처리방침</a></p>
  </div>
 </main>
 
@@ -655,15 +700,19 @@ function renderMain(){
 document.addEventListener('click',e=>{const a=e.target.closest('[data-open-search]');if(!a)return;setTimeout(()=>{$('search').open=true;$('search').scrollIntoView({behavior:'smooth',block:'start'});$('s-dep').focus({preventScroll:true})},80)});
 
 /* ---------- 라우팅 ---------- */
-const TABS=['main','home','clinics','travel','log'];
+const TABS=['main','home','clinics','travel','log','about'];
 function route(){
   const t=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'main';
-  TABS.forEach(x=>{$('p-'+x).classList.toggle('hide',x!==t);document.querySelector(`nav a[data-t=${x}]`).toggleAttribute('aria-current',x===t);if(x===t)document.querySelector(`nav a[data-t=${x}]`).setAttribute('aria-current','page')});
+  TABS.forEach(x=>{$('p-'+x).classList.toggle('hide',x!==t);const n=document.querySelector(`nav a[data-t=${x}]`);if(n){n.toggleAttribute('aria-current',x===t);if(x===t)n.setAttribute('aria-current','page')}});
   $('doseCtl').classList.toggle('hide',!(t==='home'||t==='clinics'));
   renderAll();scrollTo(0,0);
+  if(t==='about'&&jumpTo){const el=document.getElementById(jumpTo);jumpTo=null;if(el)setTimeout(()=>el.scrollIntoView({block:'start'}),30)}
 }
+let jumpTo=null;
+document.addEventListener('click',e=>{const a=e.target.closest('[data-jump]');if(!a)return;jumpTo=a.dataset.jump;if(location.hash==='#about'){e.preventDefault();route()}});
 function renderAll(){
   const h=location.hash.slice(1),t=TABS.includes(h)?h:'main';
+  if(t==='about')return;
   if(t==='main')renderMain();else if(t==='clinics')renderClinics();else if(t==='travel')renderTravel();else if(t==='log')renderLog();else renderHome();
 }
 addEventListener('hashchange',route);
