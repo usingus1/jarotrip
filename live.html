@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>자로트립 실시간 현황</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<style>
+/* VOICE: 운영자용 계기판 — 숫자 하나가 먼저 읽히게
+   IDEA: 역 전광판의 오늘 승객 수
+   PICTURE: 오늘 방문자 큰 숫자 + 단계별 막대
+   COLOUR and TYPE: 흰 바탕, 검정, 신호 빨강 #e4002b (사이트와 같음) / 시스템 고딕
+   LAYOUT: 큰 숫자 → 비교 3칸 → 오늘 행동 막대 */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#0e0e0e);--ink:light-dark(#111,#f2f2f2);--mute:light-dark(#6b6b6b,#9a9a9a);--line:light-dark(#e3e3e3,#2a2a2a);--soft:light-dark(#f4f4f4,#1a1a1a);--red:#e4002b}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Noto Sans KR",sans-serif;word-break:keep-all}
+main{max-width:720px;margin:0 auto;padding:20px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:4px solid var(--ink);padding-bottom:10px}
+header b{font-size:20px}header span{font-size:13px;color:var(--mute)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:6px;animation:p 2s infinite}
+@keyframes p{50%{opacity:.25}}@media(prefers-reduced-motion:reduce){.dot{animation:none}}
+.hero{padding:22px 0 8px}.hero .m{color:var(--mute);font-size:14px}
+.big{font-size:clamp(56px,16vw,96px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px;font-weight:600;margin-left:6px}
+.new{display:inline-block;margin-top:8px;background:var(--red);color:#fff;font-weight:700;font-size:14px;padding:3px 10px;visibility:hidden}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:18px 0}
+.row div{background:var(--bg);padding:12px}.row .m{font-size:13px;color:var(--mute)}.row .v{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+h2{font-size:17px;margin:26px 0 8px;border-bottom:2px solid var(--ink);padding-bottom:4px}
+.bar{display:grid;grid-template-columns:9.5em minmax(0,1fr) 3em;gap:10px;align-items:center;padding:6px 0;font-size:15px}
+.bar i{display:block;height:14px;background:var(--ink);min-width:2px}.bar.r i{background:var(--red)}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+.note{background:var(--soft);padding:12px 14px;font-size:14px;color:var(--mute);margin-top:24px}
+.err{color:var(--red);font-weight:700}
+a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+ <header><b>자로트립 실시간 현황</b><span><span class="dot"></span><span id="upd">불러오는 중…</span></span></header>
+ <section class="hero">
+  <div class="m">오늘 방문자 (한국 시간 0시부터 지금까지)</div>
+  <div class="big"><span id="today">–</span><small>명</small></div>
+  <div class="m">화면 조회 <b id="todayv">–</b>회</div>
+  <div class="new" id="new"></div>
+ </section>
+ <div class="row">
+  <div><div class="m">어제</div><div class="v" id="yday">–</div></div>
+  <div><div class="m">최근 7일</div><div class="v" id="week">–</div></div>
+  <div><div class="m">최근 30일</div><div class="v" id="month">–</div></div>
+ </div>
+ <h2>오늘 사람들이 한 일</h2>
+ <div id="acts"></div>
+ <div class="note" id="note">
+  숫자는 1분마다 저절로 새로 고쳐져요. 방문자는 같은 사람이 여러 번 들어와도 하루 한 명으로 세요.<br>
+  "지금 이 순간 접속 중인 인원"은 통계 서비스(GoatCounter)가 제공하지 않아서, 대신 <b>이 화면을 연 뒤 새로 들어온 방문자</b>를 빨간 표시로 알려 드려요.<br>
+  자세한 통계: <a href="https://jarotrip.goatcounter.com/">jarotrip.goatcounter.com</a>
+ </div>
+</main>
+<script>
+{
+const GC='https://jarotrip.goatcounter.com/counter/';
+const ACTS=[
+ ['여행 짜기 화면','/#plan'],
+ ['병원 찾기 버튼','plan/2-find'],
+ ['병원 골라 일정 짜기','plan/3-pick',1],
+ ['항공권 사이트로 이동',['out/flight-naver','out/flight-skyscanner','out/google'],1],
+ ['숙소 사이트로 이동',['out/stay-booking','out/stay-agoda','out/trip'],1],
+ ['날짜로 항공권 찾기','search/run'],
+ ['병원 목록 화면','/#clinics'],
+ ['가는 길 화면','/#travel'],
+];
+const kst=(off=0)=>{const d=new Date(Date.now()+9*3600e3-off*864e5);return d.toISOString().slice(0,10)};
+const num=s=>Number(String(s||'0').replace(/[^0-9]/g,''))||0;
+async function cnt(path,start,end){
+ const r=await fetch(GC+encodeURIComponent(path)+'.json?start='+start+'&end='+end,{cache:'no-store'});
+ if(r.status===404)return {u:0,v:0};
+ if(!r.ok)throw new Error(r.status);
+ const j=await r.json();return {u:num(j.count_unique),v:num(j.count)};
+}
+let first=null;
+const $=id=>document.getElementById(id);
+async function load(){
+ try{
+  const t=kst(),y=kst(1);
+  const [a,b,c,d]=await Promise.all([cnt('TOTAL',t,t),cnt('TOTAL',y,y),cnt('TOTAL',kst(6),t),cnt('TOTAL',kst(29),t)]);
+  $('today').textContent=a.u.toLocaleString('ko-KR');$('todayv').textContent=a.v.toLocaleString('ko-KR');
+  $('yday').textContent=b.u.toLocaleString('ko-KR');$('week').textContent=c.u.toLocaleString('ko-KR');$('month').textContent=d.u.toLocaleString('ko-KR');
+  if(first===null)first=a.u;
+  const n=a.u-first;$('new').textContent='이 화면을 연 뒤 새 방문자 +'+n+'명';$('new').style.visibility=n>0?'visible':'hidden';
+  const vals=await Promise.all(ACTS.map(async([,p])=>{const ps=[].concat(p);const rs=await Promise.all(ps.map(x=>cnt(x,t,t)));return rs.reduce((s,r)=>s+r.v,0)}));
+  const mx=Math.max(1,...vals);
+  $('acts').innerHTML=ACTS.map(([l,,r],i)=>`<div class="bar ${r?'r':''}"><span>${l}</span><i style="width:${vals[i]/mx*100}%"></i><b>${vals[i]}</b></div>`).join('');
+  $('upd').textContent=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 기준';
+ }catch(e){$('upd').innerHTML='<span class="err">불러오기 실패 · 1분 뒤 다시 시도</span>'}
+}
+load();setInterval(load,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+}
+</script>
+</body>
+</html>
