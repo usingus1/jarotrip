@@ -1,5 +1,5 @@
 // 화면 파일은 캐시 우선, clinics.json·travel.json은 네트워크 우선(오프라인이면 마지막 저장본)
-const CACHE = 'jt-v6';
+const CACHE = 'jt-v7';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

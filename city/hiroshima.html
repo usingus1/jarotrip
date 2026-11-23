@@ -65,4 +65,7 @@ return `<article class="c"><h3>${esc(r[I('병원명')])}</h3><p class="big">2.5m
 document.getElementById('cnt').textContent=rows.length+'곳';
 document.getElementById('upd').textContent='기준일 '+c.updatedAt;
 }catch(e){}})();
-</script></body></html>
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||!window.goatcounter||!window.goatcounter.count)return;const h=a.getAttribute('href')||'';const p=a.classList.contains('cta')?'city/cta':/^http/.test(h)?'out/site:'+new URL(a.href).hostname:null;if(p)window.goatcounter.count({path:p,title:p,event:true})},true);</script>
+<script data-goatcounter="https://jarotrip.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body></html>
