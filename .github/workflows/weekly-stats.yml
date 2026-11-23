@@ -26,7 +26,7 @@ jobs:
             q="start=${s}T00:00:00%2B09:00&end=${e}T23:59:59%2B09:00"
             echo "{\"start\":\"$s\",\"end\":\"$e\"}" > $w-range.json
             get "stats/total?$q" > $w-total.json
-            get "stats/hits?$q&limit=200" > $w-hits.json
+            get "stats/hits?$q&limit=100" > $w-hits.json
             for p in toprefs browsers systems sizes locations; do get "stats/$p?$q&limit=30" > $w-$p.json || echo '{}' > $w-$p.json; done
           done
           python3 - <<'PY'
