@@ -654,7 +654,7 @@ const addDays=(d,n)=>{const t=new Date(d+'T00:00:00');t.setDate(t.getDate()+n);t
 const wd=d=>'일월화수목금토'[new Date(d+'T00:00:00').getDay()];
 const md=d=>`${+d.slice(5,7)}/${+d.slice(8,10)}(${wd(d)})`;
 /* 트립닷컴 제휴: 파트너 화면에서 만든 링크의 값(Allianceid, SID 등). 비어 있으면 제휴 표시 없이 열린다 */
-const TRIP_AFF={Allianceid:'',SID:'',trip_sub3:''};
+const TRIP_AFF={Allianceid:'11485286',SID:'336902840',trip_sub3:'D21526549'};
 const TRIP_CITY={'도쿄':228,'오사카':219,'교토':734,'삿포로':641,'후쿠오카':248,'나고야':360,'히로시마':262,'가고시마':735};
 const TRIP_AP={PUS:'pus',ICN:'sel',GMP:'sel',TAE:'tae',CJU:'cju',FUK:'fuk',KIX:'osa',NRT:'tyo',HND:'tyo',NGO:'ngo',CTS:'spk',HIJ:'hij',KOJ:'koj'};
 function tripUrl(path,q,place){
