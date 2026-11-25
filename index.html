@@ -582,10 +582,27 @@ function travelBoard(){
     return {key:last.route+'|'+last.mode,route:last.route,from:last.from,to:last.to,dir,city:cityOfDest(dir==='go'?last.to:last.from),mode:last.mode,cur:lastP,latest:last,prev,hist:withP.slice(-14)};
   });
 }
-function cheapestTo(city,dir='go'){
-  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city));
-  b.sort((a,c)=>a.cur.price-c.cur.price);return b[0]||null;
+/* 왕복 운임 짝짓기: 오는 편 출발일은 반드시 가는 편 출발일보다 뒤여야 한다.
+   노선마다 최근 7일 동안 조회한 운임(아직 지나지 않은 출발일) 중에서, 순서가 맞는 조합의 합계가 가장 싼 쌍을 고른다.
+   출발일이 없는 운임(날짜와 무관한 배 정가 등)은 어느 날짜와도 짝지을 수 있다. 가는 편이 떠난 한국 도시(부산 / 인천·김포)로 돌아오는 편만 짝짓는다. */
+function fareCands(city,dir,group,mode){
+  const t=addDays(todayStr(),1);  // 오늘 출발 운임은 계획용으로 쓰지 않는다
+  return travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(!group||fromGroup(krSide(x))===group)&&(!mode||x.mode===mode)).flatMap(b=>{
+    const since=addDays(b.cur.day,-7);
+    const seen=new Set();
+    return b.hist.filter(r=>r.day>=since&&(!r.dep||String(r.dep)>=t)).sort((a,c)=>c.day.localeCompare(a.day)).filter(r=>{const k=r.price+'|'+(r.dep||'');if(seen.has(k))return false;seen.add(k);return true}).map(r=>({...b,cur:r}));
+  });
 }
+const fareOrderOk=(g,b)=>fromGroup(krSide(g))===fromGroup(krSide(b))&&(!g.cur.dep||!b.cur.dep||String(b.cur.dep)>String(g.cur.dep));
+function farePair(city,group,mode){
+  const G=fareCands(city,'go',group,mode),B=fareCands(city,'back',group,mode);
+  let best=null;
+  for(const g of G)for(const b of B)if(fareOrderOk(g,b)){const s=g.cur.price+b.cur.price;if(!best||s<best.s)best={s,go:g,bk:b}}
+  if(best)return {go:best.go,bk:best.bk,noBack:false};
+  const go=G.slice().sort((a,c)=>a.cur.price-c.cur.price)[0]||null;
+  return {go,bk:null,noBack:!!(go&&B.length)};  // 오는 편 운임은 있지만 가는 날 뒤 날짜가 없음
+}
+const backNote=p=>p.noBack?'가는 날 뒤 날짜의 오는 편 운임 없음':'오는 편 운임은 수집 중';
 const yen2won=y=>FX?y*FX/100:null;
 
 /* ---------- 공통 칩 ---------- */
@@ -606,11 +623,11 @@ function renderHome(){
   let cards=Object.entries(byCity).map(([city,list])=>{
     list.sort((a,b)=>a.p[k]-b.p[k]);const best=list[0];
     const online=/온라인|전국/.test(city);
-    const tr=online?null:cheapestTo(city,'go');
-    const bk=online?null:cheapestTo(city,'back');
+    const pr=online?{go:null,bk:null}:farePair(city);
+    const tr=pr.go,bk=pr.bk;
     const won=yen2won(best.p[k]);
     const total=won!=null&&tr?won+tr.cur.price+(bk?bk.cur.price:0):null;
-    return {city,list,best,tr,bk,won,total,online};
+    return {city,list,best,tr,bk,pr,won,total,online};
   });
   const grp=x=>x.online?2:x.total!=null?0:1;
   cards.sort((a,b)=>(grp(a)-grp(b))||((a.total??a.won??a.best.p[k])-(b.total??b.won??b.best.p[k])));
@@ -619,10 +636,10 @@ function renderHome(){
    ${i>0&&grp(x)!==grp(cards[i-1])?`<p class="hint" style="margin-top:18px">${grp(x)===1?'아래 도시는 아직 교통편 운임이 없어 병원 가격만 비교했어요.':'온라인 진료 후 호텔·숙소로 받는 곳'}</p>`:''}
    <a class="city ${i===firstTotal||(firstTotal<0&&i===0)?'best1':''}" href="#clinics" data-city="${esc(x.city)}">
     <div><div class="cn">${esc(x.city)}</div><div class="meta">${x.list.length}곳에서 ${keyLabel()} 처방가 확인</div></div>
-    <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>${x.bk?'병원+왕복 교통':'병원+가는 편 (오는 편 수집 중)'}</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
+    <div class="total">${x.total?`<span class="num">≈₩${man(x.total)}</span><small>${x.bk?'병원+왕복 교통':`병원+가는 편 (${x.pr.noBack?'날짜 맞는 오는 편 없음':'오는 편 수집 중'})`}</small>`:x.won?`<span class="num">≈₩${man(x.won)}</span><small>${x.online?'온라인 진료·배송':'병원만 (교통 정보 수집 중)'}</small>`:`<span class="num">¥${fmt(x.best.p[k])}</span><small>병원 최저가</small>`}</div>
     <div class="parts">
      <div class="part"><span class="m">병원 최저</span><b>${esc(x.best.name)}</b><span class="num">¥${fmt(x.best.p[k])}</span>${x.won?`<span class="kw">${kw(x.best.p[k])}</span>`:''}</div>
-     <div class="part"><span class="m">${x.online?'받는 방법':'교통 최저 (가는 편 / 오는 편)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>가는 편 ${esc(x.tr.mode)} <span class="num">₩${fmt(x.tr.cur.price)}</span></b><span class="m">${esc(x.tr.route)}${x.tr.cur.dep?' · '+esc(x.tr.cur.dep):''}</span>${x.bk?`<b style="margin-top:6px">오는 편 ${esc(x.bk.mode)} <span class="num">₩${fmt(x.bk.cur.price)}</span></b><span class="m">${esc(x.bk.route)}${x.bk.cur.dep?' · '+esc(x.bk.cur.dep):''}</span>`:'<span class="m" style="display:block;margin-top:6px">오는 편 운임은 수집 중</span>'}`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
+     <div class="part"><span class="m">${x.online?'받는 방법':'교통 최저 (가는 편 / 오는 편)'}</span>${x.online?`<b>${esc(x.best.ship||'호텔·숙소 배송')}</b>`:x.tr?`<b>가는 편 ${esc(x.tr.mode)} <span class="num">₩${fmt(x.tr.cur.price)}</span></b><span class="m">${esc(x.tr.route)}${x.tr.cur.dep?' · '+esc(x.tr.cur.dep):''}</span>${x.bk?`<b style="margin-top:6px">오는 편 ${esc(x.bk.mode)} <span class="num">₩${fmt(x.bk.cur.price)}</span></b><span class="m">${esc(x.bk.route)}${x.bk.cur.dep?' · '+esc(x.bk.cur.dep):''}</span>`:`<span class="m" style="display:block;margin-top:6px">${backNote(x.pr)}</span>`}`:'<b>매일 낮 조회 후 표시돼요</b><span class="m">항공·배편 운임 수집 중</span>'}</div>
     </div>
    </a>`).join(''):`<div class="empty">${keyLabel()} 가격이 확인된 병원이 아직 없어요. 다른 용량을 골라 보세요.</div>`;
   $('cities').onclick=e=>{const a=e.target.closest('.city');if(!a)return;st.city=a.dataset.city;save();buildCityChips()};
@@ -660,15 +677,15 @@ function renderClinics(){
   const open=new Set([...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.n));
   $('list').innerHTML=L.length?L.map((c,i)=>{
     const v=c.p[k],w=v?yen2won(v):null,url=safeUrl(c.url);
-    const tr=/온라인|전국/.test(c.city)?null:cheapestTo(c.city,'go');
-    const bk=/온라인|전국/.test(c.city)?null:cheapestTo(c.city,'back');
+    const pr=/온라인|전국/.test(c.city)?{go:null,bk:null}:farePair(c.city);
+    const tr=pr.go,bk=pr.bk;
     const sub=[v&&st.period==='3'?`월 ¥${fmt(Math.round(v/3))}`:'',c.memo&&/\+α|미확인/.test(c.memo)?'+α 별도':''].filter(Boolean).join(' · ');
     return `<details class="row" data-n="${esc(c.name)}" ${open.has(String(c.name))?'open':''}><summary>
      <div>${v?`<div class="price num ${st.sort==='price'&&i<3?'rank':''}"><small>¥</small>${fmt(v)}</div>${w?`<span class="kw">${kw(v)}</span>`:''}<div class="per">${sub||'총액'}</div>`:`<div class="price na">${st.dose}mg 가격 미확인</div>`}</div>
      <div><div class="nm">${esc(c.name)}</div><div class="meta">${esc(c.city)}${c.checked?` · ${esc(c.checked)} 확인`:''}</div><div class="tags">${tagFor(c)}</div>${c.status&&c.status!=='확인 필요'?`<div class="status">${esc(c.status)}</div>`:''}</div>
      <div class="arw" aria-hidden="true">›</div></summary>
      <div class="det">${priceTable(c)}
-      ${tr||bk?`<div class="go">✈ ${tr?`가는 편 최저 <b>${esc(tr.route)} ${esc(tr.mode)} <span class="num">₩${fmt(tr.cur.price)}</span></b>${tr.cur.dep?' ('+esc(tr.cur.dep)+')':''}`:''}${bk?`<br>✈ 오는 편 최저 <b>${esc(bk.route)} ${esc(bk.mode)} <span class="num">₩${fmt(bk.cur.price)}</span></b>${bk.cur.dep?' ('+esc(bk.cur.dep)+')':''}`:''}</div>`:''}
+      ${tr||bk?`<div class="go">✈ ${tr?`가는 편 최저 <b>${esc(tr.route)} ${esc(tr.mode)} <span class="num">₩${fmt(tr.cur.price)}</span></b>${tr.cur.dep?' ('+esc(tr.cur.dep)+')':''}`:''}${bk?`<br>✈ 오는 편 최저 <b>${esc(bk.route)} ${esc(bk.mode)} <span class="num">₩${fmt(bk.cur.price)}</span></b>${bk.cur.dep?' ('+esc(bk.cur.dep)+')':''}`:pr.noBack?'<br>✈ 가는 날 뒤 날짜의 오는 편 운임은 아직 없어요':''}</div>`:''}
       ${/온라인|전국/.test(c.city)?'':stayBox(c)}
       <dl>${[['가격 메모',c.memo],['연락',c.contact],['배송',c.ship],['예약 상황',c.status],['주소',c.addr],['비고',c.note],['출처',c.src]].filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
       <div class="btns">${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">공식 페이지 ↗</a>`:''}${c.addr&&!/온라인/.test(c.addr)?`<a class="btn o" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name.replace(/\(.*?\)/g,'')+' '+c.addr)}" target="_blank" rel="noopener">지도</a>`:''}${AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')?`<button class="btn" data-plan="${esc(c.name)}">🧭 이 병원으로 여행 짜기</button>`:''}<button class="btn o" data-copy="${esc(c.name+' · '+(v?'¥'+fmt(v)+' ('+keyLabel()+')':'')+(url?' · '+url:''))}">복사</button></div>
@@ -754,7 +771,8 @@ function initSearch(){
   $('sf').onsubmit=e=>{e.preventDefault();sync();runSearch(true)};
 }
 function refLine(city,dir,ship){
-  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(ship?x.mode==='배':x.mode==='항공')).sort((a,c)=>a.cur.price-c.cur.price)[0];
+  const pr=farePair(city,'',ship?'배':'항공'),b=dir==='go'?pr.go:pr.bk;
+  if(!b&&dir==='back'&&pr.noBack)return '<b style="font-size:14px;font-weight:600">가는 편 날짜 뒤의 오는 편 운임은 아직 없어요</b>';
   return b?`<b><span class="num">₩${fmt(b.cur.price)}</span></b><span class="m">${esc(b.route)}${b.cur.dep?' · '+esc(md(b.cur.dep))+' 출발':''}${b.cur.carrier?' · '+esc(b.cur.carrier):''}</span>`:`<b style="font-size:14px;font-weight:600">${dir==='back'?'오늘 낮 조회부터 쌓여요':'아직 기록 없음'}</b>`;
 }
 function renderSearch(){
@@ -923,10 +941,7 @@ const AIRPORT_HINT={
   KOJ:{name:'가고시마 공항',hint:'가고시마추오역까지 버스로 약 40분.'}
 };
 const fromToGroup=c=>c==='PUS'?'부산':(c==='ICN'||c==='GMP')?'인천·김포':'';
-function refFare(city,dir,group){
-  const b=travelBoard().filter(x=>x.cur&&x.dir===dir&&(x.city===city||nearCity[x.city]===city)&&(!group||fromGroup(krSide(x))===group)).sort((a,c)=>a.cur.price-c.cur.price);
-  return b[0]||null;
-}
+const refPair=(city,group)=>farePair(city,group);
 const nightsOf=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 function planOk(){const t=todayStr();return st.pDep&&st.pDep>=t&&st.pRet&&st.pRet>st.pDep}
 function planCities(){
@@ -941,10 +956,10 @@ function buildPlanCities(){
 function planCandidates(all){
   const k=key(),g=fromToGroup(st.pFrom),city=all?'전체':(st.pCity||'전체');
   return C.clinics.filter(c=>c.p[k]&&AP_OF_CITY[c.city]&&!String(AP_OF_CITY[c.city]).startsWith('SHIP')&&c.tour!=='중단'&&(city==='전체'||c.city===city)).map(c=>{
-    const won=yen2won(c.p[k]),go=refFare(c.city,'go',g),bk=refFare(c.city,'back',g);
+    const won=yen2won(c.p[k]),pr=refPair(c.city,g),go=pr.go,bk=pr.bk;
     const sc=st.pStay==='cheap'&&planOk()?stayCost(c,nightsOf(st.pDep,st.pRet),st.pPax):null;
     const total=won!=null?won+(go?go.cur.price:0)+(bk?bk.cur.price:0)+(sc?sc.per:0):null;
-    return {c,won,go,bk,sc,total,full:!!(go&&bk),known:(go?1:0)+(bk?1:0)+(sc?1:0),closed:/마감|중단|빈자리 없음/.test(c.status||'')};
+    return {c,won,go,bk,pr,sc,total,full:!!(go&&bk),known:(go?1:0)+(bk?1:0)+(sc?1:0),closed:/마감|중단|빈자리 없음/.test(c.status||'')};
   }).sort((a,b)=>(b.known-a.known)||(a.closed-b.closed)||((a.total??1e12)-(b.total??1e12)));
 }
 function renderPlanList(){
@@ -960,7 +975,7 @@ function renderPlanList(){
    </div>`};
   const head=city=>{const g=groups[city],x=g[0],ap=AP_OF_CITY[city],AH=AIRPORT_HINT[ap];
     return `<div class="cityh"><b>${esc(city)}</b><span class="num">${x.total?'최저 ≈₩'+man(x.total):''}</span>
-     <span class="m">병원 ${g.length}곳 · ${AH?esc(AH.name):''} · ${x.go?`가는 편 ${esc(x.go.mode)} ₩${fmt(x.go.cur.price)}`:'가는 편 운임 수집 중'} · ${x.bk?`오는 편 ${esc(x.bk.mode)} ₩${fmt(x.bk.cur.price)}`:'오는 편 운임 수집 중'}</span></div>`};
+     <span class="m">병원 ${g.length}곳 · ${AH?esc(AH.name):''} · ${x.go?`가는 편 ${esc(x.go.mode)} ₩${fmt(x.go.cur.price)}${x.go.cur.dep?' ('+esc(md(x.go.cur.dep))+')':''}`:'가는 편 운임 수집 중'} · ${x.bk?`오는 편 ${esc(x.bk.mode)} ₩${fmt(x.bk.cur.price)}${x.bk.cur.dep?' ('+esc(md(x.bk.cur.dep))+')':''}`:backNote(x.pr)}</span></div>`};
   $('p-list').innerHTML=`<p class="hint" style="margin:0">${keyLabel()} · ${esc(apName(st.pFrom))} 출발 · 목적지 <b>${esc(sel==='전체'?'전체 도시':sel)}</b> 기준이에요. ${sel==='전체'?'교통 운임이 확인된 도시를 먼저, 도시 안에서는 ':''}병원비(원화) + 교통 최저가${st.pStay==='cheap'?' + 근처 최저가 숙소':''}를 더한 <b>예상 총액(1인)이 낮은 순</b>이에요. ${st.pStay==='cheap'?`숙박비는 ${nightsOf(st.pDep,st.pRet)}박 · ${rooms(st.pPax)}실 기준 1인 부담분이에요.`:'숙박비는 빠져 있어요. 1단계에서 "숙소"를 고르면 더해져요.'}</p>`+
    (order.length?order.map(city=>head(city)+groups[city].map(card).join('')).join(''):`<div class="empty">${esc(sel)}에서 ${keyLabel()} 가격이 확인된 병원이 없어요. 용량·기간이나 목적지를 바꿔 보세요.</div>`);
 }
@@ -973,7 +988,7 @@ function renderPlan(){
   if(!c||!planOk()){$('p-plan-out').innerHTML='<p class="hint" style="margin:0">2단계에서 병원을 고르면 동선이 완성돼요.</p>';return false}
   const k=key(),dep=st.pDep,ret=st.pRet,n=Math.round((new Date(ret)-new Date(dep))/864e5),pax=st.pPax||'1';
   const ap=AP_OF_CITY[c.city],AH=AIRPORT_HINT[ap]||{name:apName(ap),hint:''};
-  const g=fromToGroup(st.pFrom),go=refFare(c.city,'go',g),bk=refFare(c.city,'back',g),won=yen2won(c.p[k]);
+  const g=fromToGroup(st.pFrom),pr=refPair(c.city,g),go=pr.go,bk=pr.bk,won=yen2won(c.p[k]);
   const fl=flightLinks(st.pFrom,ap,dep,ret,pax,'plan');
   const stays=stayLinks(c,dep,ret,pax,'plan');
   const addr=(c.addr&&!/온라인/.test(c.addr))?c.addr.split('/')[0]:c.city;
@@ -1005,8 +1020,8 @@ function renderPlan(){
    ${c.tour&&c.tour!=='확인'?`<div class="warn">관광객 처방이 "${esc(c.tour)}" 상태예요. 방문 전 꼭 문의하세요.</div>`:''}
    <table class="cost"><tbody>
     <tr><td>병원 (${keyLabel()})</td><td>¥${fmt(c.p[k])}${won?' ≈ ₩'+fmt(Math.round(won/100)*100):''}</td></tr>
-    <tr><td>가는 편 (최근 최저가 참고)</td><td>${go?'₩'+fmt(go.cur.price):'수집 중'}</td></tr>
-    <tr><td>오는 편 (최근 최저가 참고)</td><td>${bk?'₩'+fmt(bk.cur.price):'수집 중'}</td></tr>
+    <tr><td>가는 편 (최근 최저가 참고)${go&&go.cur.dep?`<br><small style="font-weight:600;color:var(--mute)">${esc(md(go.cur.dep))} 출발 기준</small>`:''}</td><td>${go?'₩'+fmt(go.cur.price):'수집 중'}</td></tr>
+    <tr><td>오는 편 (최근 최저가 참고)${bk&&bk.cur.dep?`<br><small style="font-weight:600;color:var(--mute)">${esc(md(bk.cur.dep))} 출발 기준 · 가는 편보다 뒤 날짜</small>`:''}</td><td>${bk?'₩'+fmt(bk.cur.price):pr.noBack?'날짜 맞는 운임 없음':'수집 중'}</td></tr>
     <tr><td>숙박 ${n}박${sc?`<br><small style="font-weight:600;color:var(--mute)">${esc(sc.r.name)} · 1박 ₩${fmt(sc.r.price)} × ${n}박 × ${rooms(pax)}실${+pax>1?' ÷ '+esc(pax)+'명':''}</small>`:''}</td><td>${sc?'₩'+fmt(sc.per):st.pStay==='cheap'?'숙소 가격 수집 중':'포함 안 함'}</td></tr>
     <tr class="sum"><td>예상 합계 (${sc?'숙박 포함':'숙박 제외'}, 1인)${go&&bk?'':'<br><small style="font-weight:600;color:var(--mute)">교통비 일부 수집 중이라 빠져 있어요</small>'}</td><td>≈ ₩${fmt(Math.round(sum/1000)*1000)}</td></tr>
    </tbody></table>
