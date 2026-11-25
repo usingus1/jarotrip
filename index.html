@@ -1258,6 +1258,13 @@ document.addEventListener('click',e=>{const t=e.target;
  if(t.closest('#inst-b')){send('install','홈 화면에 추가',true);return}
  const ch=t.closest('.chip');if(ch&&ch.parentElement&&ch.parentElement.id){send('chip/'+ch.parentElement.id+'/'+ch.dataset.v,'선택 '+ch.parentElement.id+' '+ch.dataset.v,true)}
 },true);})();
+/* 실시간 접속자 (Supabase, supabase/live.sql) — 화면이 보이는 동안 30초마다 "아직 보고 있어요" 신호.
+   탭마다 새로 만드는 무작위 번호와 화면 이름만 보낸다. 운영자는 live.html 에서 본다. */
+(()=>{const U='https://imuajiqktrnhinqfrnva.supabase.co/rest/v1/rpc/live_ping',K='sb_publishable_yUje1cM2a__SiwUXh0RsGA_AfCBZLPg';
+let sid;try{sid=sessionStorage.getItem('jt-sid')}catch(e){}
+if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);try{sessionStorage.setItem('jt-sid',sid)}catch(e){}}
+const ping=()=>{if(document.hidden)return;fetch(U,{method:'POST',keepalive:true,headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify({p_sid:sid,p_page:(location.hash||'#main').slice(1,31)})}).catch(()=>{})};
+ping();setInterval(ping,30000);addEventListener('hashchange',ping);document.addEventListener('visibilitychange',ping);})();
 </script>
 <script data-goatcounter="https://jarotrip.goatcounter.com/count" data-goatcounter-settings='{"no_onload":true}' async src="https://gc.zgo.at/count.js"></script>
 </body>
