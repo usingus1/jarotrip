@@ -30,6 +30,12 @@ h2{font-size:17px;margin:26px 0 8px;border-bottom:2px solid var(--ink);padding-b
 .bar{display:grid;grid-template-columns:9.5em minmax(0,1fr) 3em;gap:10px;align-items:center;padding:6px 0;font-size:15px}
 .bar i{display:block;height:14px;background:var(--ink);min-width:2px}.bar.r i{background:var(--red)}
 .bar b{text-align:right;font-variant-numeric:tabular-nums}
+.live{display:flex;align-items:center;gap:14px;border:2px solid var(--red);padding:12px 14px;margin:16px 0 0}
+.live .v{font-size:40px;font-weight:800;line-height:1;color:var(--red);font-variant-numeric:tabular-nums}
+.live .m{font-size:14px;color:var(--mute)}.live .pg{font-size:13px;color:var(--mute);margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left;white-space:nowrap}
+th{font-size:13px;color:var(--mute);font-weight:600}td.r{color:var(--red);font-weight:800}
 .note{background:var(--soft);padding:12px 14px;font-size:14px;color:var(--mute);margin-top:24px}
 .err{color:var(--red);font-weight:700}
 a{color:inherit}
@@ -38,6 +44,7 @@ a{color:inherit}
 <body>
 <main>
  <header><b>자로트립 실시간 현황</b><span><span class="dot"></span><span id="upd">불러오는 중…</span></span></header>
+ <div class="live"><div class="v" id="now">–</div><div><b><span class="dot"></span>지금 접속 중</b><div class="m">최근 90초 안에 사이트를 보고 있던 사람 · 15초마다 갱신</div><div class="pg" id="nowpg"></div></div></div>
  <section class="hero">
   <div class="m">오늘 방문자 (한국 시간 0시부터 지금까지)</div>
   <div class="big"><span id="today">–</span><small>명</small></div>
@@ -49,11 +56,15 @@ a{color:inherit}
   <div><div class="m">최근 7일</div><div class="v" id="week">–</div></div>
   <div><div class="m">최근 30일</div><div class="v" id="month">–</div></div>
  </div>
+ <h2>결제 페이지(트립닷컴)로 이어진 횟수</h2>
+ <table><thead><tr><th></th><th>방문자</th><th>항공권으로</th><th>숙소로</th><th>이동한 사람</th><th>비율</th></tr></thead><tbody id="fun"></tbody></table>
+ <div class="m" style="font-size:13px;color:var(--mute);margin-top:6px">항공권·숙소 칸은 버튼을 누른 횟수, "이동한 사람"은 하루 한 명으로 센 인원(항공권+숙소 합)이에요. 비율 = 이동한 사람 ÷ 방문자.</div>
  <h2>오늘 사람들이 한 일</h2>
  <div id="acts"></div>
  <div class="note" id="note">
   숫자는 1분마다 저절로 새로 고쳐져요. 방문자는 같은 사람이 여러 번 들어와도 하루 한 명으로 세요.<br>
-  "지금 이 순간 접속 중인 인원"은 통계 서비스(GoatCounter)가 제공하지 않아서, 대신 <b>이 화면을 연 뒤 새로 들어온 방문자</b>를 빨간 표시로 알려 드려요.<br>
+  "지금 접속 중"은 사이트가 30초마다 보내는 신호로 세요(Supabase). 이 숫자가 계속 –로 나오면 <code>supabase/live.sql</code>을 아직 실행하지 않은 거예요.<br>
+  <b>실제 결제(예약 완료) 건수</b>는 결제가 트립닷컴에서 이뤄져 이 화면에서 셀 수 없어요. 트립닷컴 제휴 파트너 화면의 주문 보고서에서 확인하고, 보고서의 <code>trip_sub1</code> 값(jarotrip-flight, jarotrip-stay 등)으로 어느 버튼에서 온 예약인지 나눠 볼 수 있어요.<br>
   자세한 통계: <a href="https://jarotrip.goatcounter.com/">jarotrip.goatcounter.com</a>
  </div>
 </main>
@@ -78,6 +89,22 @@ async function cnt(path,start,end){
  if(!r.ok)throw new Error(r.status);
  const j=await r.json();return {u:num(j.count_unique),v:num(j.count)};
 }
+const SBU='https://imuajiqktrnhinqfrnva.supabase.co/rest/v1/rpc/live_count',SBK='sb_publishable_yUje1cM2a__SiwUXh0RsGA_AfCBZLPg';
+const PG={main:'첫 화면',home:'홈',plan:'여행 짜기',clinics:'병원 목록',travel:'가는 길',board:'커뮤니티',log:'변경 기록',about:'안내'};
+async function live(){
+ try{
+  const r=await fetch(SBU,{method:'POST',cache:'no-store',headers:{apikey:SBK,'Content-Type':'application/json'},body:'{}'});
+  if(!r.ok)throw 0;const j=await r.json();
+  $('now').textContent=(+j.now||0).toLocaleString('ko-KR');
+  $('nowpg').textContent=Object.entries(j.pages||{}).sort((a,b)=>b[1]-a[1]).map(([k,n])=>(PG[k]||k)+' '+n).join(' · ');
+ }catch(e){$('now').textContent='–';$('nowpg').textContent='아직 연결 안 됨'}
+}
+const pct=(a,b)=>b?(a/b*100).toFixed(1)+'%':'–';
+async function funnel(t){
+ const P=[['오늘',t,t],['어제',kst(1),kst(1)],['최근 7일',kst(6),t],['최근 30일',kst(29),t]];
+ const rows=await Promise.all(P.map(async([l,s,e])=>{const [v,f,h]=await Promise.all([cnt('TOTAL',s,e),cnt('out/flight-trip',s,e),cnt('out/stay-trip',s,e)]);return {l,v:v.u,f:f.v,h:h.v,p:f.u+h.u}}));
+ $('fun').innerHTML=rows.map(r=>`<tr><td>${r.l}</td><td>${r.v.toLocaleString('ko-KR')}</td><td>${r.f}</td><td>${r.h}</td><td class="r">${r.p}</td><td>${pct(r.p,r.v)}</td></tr>`).join('');
+}
 let first=null;
 const $=id=>document.getElementById(id);
 async function load(){
@@ -88,14 +115,15 @@ async function load(){
   $('yday').textContent=b.u.toLocaleString('ko-KR');$('week').textContent=c.u.toLocaleString('ko-KR');$('month').textContent=d.u.toLocaleString('ko-KR');
   if(first===null)first=a.u;
   const n=a.u-first;$('new').textContent='이 화면을 연 뒤 새 방문자 +'+n+'명';$('new').style.visibility=n>0?'visible':'hidden';
+  await funnel(t);
   const vals=await Promise.all(ACTS.map(async([,p])=>{const ps=[].concat(p);const rs=await Promise.all(ps.map(x=>cnt(x,t,t)));return rs.reduce((s,r)=>s+r.v,0)}));
   const mx=Math.max(1,...vals);
   $('acts').innerHTML=ACTS.map(([l,,r],i)=>`<div class="bar ${r?'r':''}"><span>${l}</span><i style="width:${vals[i]/mx*100}%"></i><b>${vals[i]}</b></div>`).join('');
   $('upd').textContent=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 기준';
  }catch(e){$('upd').innerHTML='<span class="err">불러오기 실패 · 1분 뒤 다시 시도</span>'}
 }
-load();setInterval(load,60000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+load();setInterval(load,60000);live();setInterval(live,15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){load();live()}});
 }
 </script>
 </body>
