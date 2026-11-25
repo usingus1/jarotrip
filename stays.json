@@ -1,1 +1,246 @@
-{"updatedAt":"2026-11-25","header":["조회일","도시","지역","숙소명","1박 최저가(원)","역·도보","출처","비고"],"rows":[]}
+{
+"updatedAt": "2026-11-25",
+"note": "지역별 개인실 최저가 참고값. 도미토리·캡슐 제외",
+"header": [
+"조회일",
+"도시",
+"지역",
+"숙소명",
+"1박 최저가(원)",
+"역·도보",
+"출처",
+"비고"
+],
+"rows": [
+[
+"2026-11-25",
+"도쿄",
+"신주쿠",
+"신주쿠 어반 호텔 (Shinjuku Urban Hotel)",
+26795,
+"신주쿠산초메역 도보 3분",
+"https://www.hotelscombined.co.kr/Hotel/Shinjuku_Urban_Hotel.htm",
+"호텔스컴바인 표시 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"긴자",
+"호텔 아마넥 긴자 이스트 (Hotel Amanek Ginza East)",
+30410,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Amanek_Ginza_East.htm",
+"호텔스컴바인 검색 최저가, 날짜·객실 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"고탄다",
+"게이오 프레소 인 고탄다 (Keio Presso Inn Gotanda)",
+82447,
+"",
+"https://www.kayak.co.kr/%EB%8F%84%EC%BF%84-%ED%98%B8%ED%85%94-Keio-Presso-Inn-Gotanda.798294.ksp",
+"카약 특가, 7월 검색 기준. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"신바시",
+"코코 호텔 신바시 오나리몬 (Koko Hotel Shimbashi Onarimon)",
+43960,
+"오나리몬역 인근",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Wing_International_Shimbashi_Onarimon.htm",
+"호텔스컴바인 검색 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"신바시",
+"소테츠 프레사 인 신바시 히비야구치 (Sotetsu Fresa Inn Shimbashi Hibiyaguchi)",
+57706,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Sotetsu_Fresa_Inn_Shimbashi_Hibiyaguchi.htm",
+"호텔스컴바인 표시 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"이치가야",
+"호텔 그랜드 힐 이치가야 (Hotel Grand Hill Ichigaya)",
+90091,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Grand_Hill_Ichigaya.htm",
+"호텔스컴바인 표시 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"우에노",
+"우에노 토우가네야 호텔 (Ueno Touganeya Hotel)",
+36960,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Ueno_Touganeya_Hotel.htm",
+"호텔스컴바인 표시 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"도쿄",
+"우에노",
+"호텔 뉴 우에노 (Hotel New Ueno)",
+48878,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_New_Ueno.htm",
+"호텔스컴바인 표시 최저가, 날짜 미지정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"오사카",
+"난바",
+"스마일 호텔 난바 (Smile Hotel Namba)",
+28082,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Smile_Hotel_Namba.htm",
+"호텔스컴바인 최근 객실 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"오사카",
+"신사이바시",
+"웰리나 호텔 프리미어 신사이바시 (Welina Hotel Premier Shinsaibashi)",
+42556,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Welina_Hotel_Premier_Shinsaibashi.htm",
+"호텔스컴바인 표시 최저가, 여름 시기 기준 추정. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"오사카",
+"신사이바시",
+"토요코인 오사카 신사이바시 니시 (Toyoko Inn Osaka Shinsaibashi Nishi)",
+43310,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Toyoko_Inn_Osaka_Shinsaibashi_Nishi.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"오사카",
+"니시나리",
+"호텔 신 이마미야 (Shin-Imamiya Hotel)",
+8930,
+"신이마미야역 인근",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Shin_Imamiya.htm",
+"호텔스컴바인 표시 최저가(평균 약 29,600원). 간이 숙소급이라 객실 냉장고 여부 확인 필요. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"오사카",
+"니시나리",
+"FP 호텔스 사우스-난바 (FP HOTELS South-Namba)",
+36236,
+"신이마미야역 인근",
+"https://www.hotelscombined.co.kr/Hotel/FP_HOTELS_South_Namba.htm",
+"호텔스컴바인 검색 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"후쿠오카",
+"텐진",
+"헤이와다이 호텔 텐진 (Heiwadai Hotel Tenjin)",
+33708,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Heiwadai_Hotel_Tenjin.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"후쿠오카",
+"나카스",
+"구움 호텔 나카스 (goom Hotel Nakasu)",
+29456,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Toho_Hotel_Nakasu.htm",
+"호텔스컴바인 최근 객실 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"후쿠오카",
+"하카타",
+"호텔 하카타 플레이스 (Hotel Hakata Place)",
+30337,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Hakata_Place.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"나고야",
+"사카에",
+"베스트 웨스턴 플러스 나고야 사카에 (Best Western Plus Nagoya Sakae)",
+41084,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Best_Western_Plus_Nagoya_Sakae.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"나고야",
+"메이에키",
+"토요코인 나고야 메이에키 미나미 (Toyoko Inn Nagoya Meieki Minami)",
+55246,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Toyoko_Inn_Nagoya_Meieki_Minami.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"삿포로",
+"스스키노",
+"호텔 라이브맥스 삿포로 스스키노 (Hotel Livemax Sapporo Susukino)",
+26404,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Livemax_Sapporo_Susukino.htm",
+"호텔스컴바인 표시 최저가. 겨울 성수기엔 오를 수 있음. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"교토",
+"교토역",
+"미쓰이 가든 호텔 교토 스테이션 (Mitsui Garden Hotel Kyoto Station)",
+63606,
+"교토역 인근",
+"https://www.hotelscombined.co.kr/Hotel/Mitsui_Garden_Hotel_Kyoto_Station.htm",
+"호텔스컴바인 표시 최저가. 교토시 숙박세 별도. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"히로시마",
+"히로시마역",
+"토요코인 히로시마역 남쪽 출구 미기 (Toyoko Inn Hiroshima-eki Minami-guchi Migi)",
+66114,
+"히로시마역 남쪽 출구",
+"https://www.hotelscombined.co.kr/Hotel/Toyoko_Inn_Hiroshima_eki_Minami_guchi_Migi.htm",
+"호텔스컴바인 최근 객실 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"가고시마",
+"덴몬칸",
+"코코 호텔 가고시마 덴몬칸 (Koko Hotel Kagoshima Tenmonkan)",
+25621,
+"",
+"https://www.hotelscombined.co.kr/Hotel/UNIZO_INN_Express_Kagoshima_Tenmonkan.htm",
+"호텔스컴바인 검색 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+],
+[
+"2026-11-25",
+"가고시마",
+"덴몬칸",
+"호텔 마이스테이스 가고시마 덴몬칸 아넥스 (Hotel Mystays Kagoshima Tenmonkan Annex)",
+25645,
+"",
+"https://www.hotelscombined.co.kr/Hotel/Hotel_Mystays_Kagoshima_Tenmonkan_Annex.htm",
+"호텔스컴바인 표시 최저가. 검색 결과 표시가 기준(실시간 아님), 세금·숙박세 포함 여부 미확인"
+]
+]
+}
